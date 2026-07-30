@@ -8,11 +8,11 @@
       </a>
       <div class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600">
         <a href="{{ route('homepage') }}" class="hover:text-[#2E7D32] transition">Beranda</a>
-        <a href="{{ route('satwa') }}" class="hover:text-[#2E7D32] transition">Spesies</a>
+        <a href="{{ route('spesies') }}" class="hover:text-[#2E7D32] transition">Spesies</a>
         <a href="{{ route('herbal') }}" class="hover:text-[#2E7D32] transition">Herbal</a>
         <a href="{{ route('map') }}" class="hover:text-[#2E7D32] transition">Peta Interaktif</a>
-        <a href="#" class="hover:text-[#2E7D32] transition">Riset</a>
-        <a href="#" class="hover:text-[#2E7D32] transition">Komunitas</a>
+        <a href="{{ route('riset') }}" class="hover:text-[#2E7D32] transition">Riset</a>
+        <a href="{{ route('kontribusi') }}" class="hover:text-[#2E7D32] transition">Kontribusi</a>
       </div>
       <div class="flex items-center gap-3">
         @auth

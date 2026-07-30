@@ -6,11 +6,11 @@
       
       <!-- BREADCRUMB -->
       <nav class="flex items-center gap-2 text-xs text-gray-400 mb-6">
-        <a href="homepage.html" class="hover:text-[#2E7D32]">Beranda</a>
+        <a href="{{ route('homepage') }}" class="hover:text-[#2E7D32]">Beranda</a>
         <i class="fa-solid fa-chevron-right text-[10px]"></i>
-        <a href="herbal.html" class="hover:text-[#2E7D32]">Database Herbal</a>
+        <a href="{{ route('herbal') }}" class="hover:text-[#2E7D32]">Database Herbal</a>
         <i class="fa-solid fa-chevron-right text-[10px]"></i>
-        <span class="text-gray-600 font-medium">Kunyit</span>
+        <span class="text-gray-600 font-medium">{{ $herbal->local_name }}</span>
       </nav>
 
       <!-- HEADER SECTION -->
@@ -41,14 +41,16 @@
           <div class="p-6 md:p-8 md:pl-0 flex flex-col justify-center">
             <div class="flex flex-wrap gap-2 mb-4">
               <span class="bg-[#E8F5E9] text-[#2E7D32] text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">Tanaman Obat</span>
-              <span class="bg-[#FEF3C7] text-[#D97706] text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">Aman</span>
-              <span class="bg-gray-100 text-gray-500 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">Endemik Asia</span>
+              <span class="bg-{{ $herbal->evidence_level === 'Clinical_Trial' ? 'green' : 'amber' }}-100 text-{{ $herbal->evidence_level === 'Clinical_Trial' ? 'green' : 'amber' }}-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">{{ $herbal->evidence_level === 'Clinical_Trial' ? 'Uji Klinis' : 'Empiris' }}</span>
+              @if($herbal->origin_region)
+                <span class="bg-gray-100 text-gray-500 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">{{ $herbal->origin_region }}</span>
+              @endif
             </div>
-            <h1 class="text-4xl md:text-5xl font-black text-gray-900 mb-2">Kunyit <span class="text-[#D97706]">(Curcuma)</span></h1>
-            <p class="text-lg italic text-gray-400 mb-6 font-medium">Curcuma longa L.</p>
+            <h1 class="text-4xl md:text-5xl font-black text-gray-900 mb-2">{{ $herbal->local_name }}</h1>
+            <p class="text-lg italic text-gray-400 mb-6 font-medium">{{ $herbal->scientific_name }}</p>
             
             <p class="text-gray-600 leading-relaxed mb-8 max-w-xl">
-              Kunyit adalah tanaman rempah-rempah dan obat asli dari wilayah Asia Tenggara. Tanaman ini merupakan salah satu komponen utama dalam ramuan Jamu tradisional Indonesia karena kandungan kurkuminnya yang kaya akan manfaat kesehatan.
+              {{ $herbal->description }}
             </p>
 
             <div class="flex items-center gap-4 mb-8">
@@ -105,28 +107,39 @@
                       <li class="flex items-start gap-3">
                         <i class="fa-solid fa-check-circle text-[#2E7D32] mt-1 text-sm"></i>
                         <div>
-                          <p class="text-sm font-bold text-gray-800">Genus & Famili</p>
-                          <p class="text-sm text-gray-500">Curcuma, Zingiberaceae</p>
+                          <p class="text-sm font-bold text-gray-800">Famili</p>
+                          <p class="text-sm text-gray-500">{{ $herbal->plant_family ?? '-' }}</p>
                         </div>
                       </li>
                       <li class="flex items-start gap-3">
                         <i class="fa-solid fa-check-circle text-[#2E7D32] mt-1 text-sm"></i>
                         <div>
                           <p class="text-sm font-bold text-gray-800">Ciri Fisik</p>
-                          <p class="text-sm text-gray-500">Batang semu, tinggi 40-100 cm. Rimpang berwarna oranye cerah.</p>
+                          <p class="text-sm text-gray-500">{{ $herbal->morphology_description ?? 'Data morfologi belum tersedia.' }}</p>
                         </div>
                       </li>
                       <li class="flex items-start gap-3">
                         <i class="fa-solid fa-check-circle text-[#2E7D32] mt-1 text-sm"></i>
                         <div>
                           <p class="text-sm font-bold text-gray-800">Lingkungan Tumbuh</p>
-                          <p class="text-sm text-gray-500">Dataran rendah hingga 1600 mdpl. Curah hujan 2000-4000 mm/tahun.</p>
+                          <p class="text-sm text-gray-500">{{ $herbal->cultivation_zone ?? '-' }}</p>
+                        </div>
+                      </li>
+                      <li class="flex items-start gap-3">
+                        <i class="fa-solid fa-check-circle text-[#2E7D32] mt-1 text-sm"></i>
+                        <div>
+                          <p class="text-sm font-bold text-gray-800">Bagian Yang Digunakan</p>
+                          <p class="text-sm text-gray-500">
+                              {{ is_array($herbal->plant_parts) ? implode(', ', $herbal->plant_parts) : ($herbal->plant_parts ?? '-') }}
+                          </p>
                         </div>
                       </li>
                     </ul>
                   </div>
                   <div class="rounded-2xl overflow-hidden border border-gray-100 h-48 relative">
-                    <img class="w-full h-full object-cover" src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=800&q=80" alt="stylized map of indonesia showing turmeric distribution hotspots in Sumatra Java and Sulawesi, soft " />
+                    <img class="w-full h-full object-cover" 
+                         src="{{ $herbal->map_image_url ?: 'https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=800&q=80' }}" 
+                         alt="Peta Distribusi" />
                     <div class="absolute inset-0 flex items-center justify-center bg-black/10">
                       <span class="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-lg text-[10px] font-bold text-gray-700 shadow-sm border border-gray-200">
                         <i class="fa-solid fa-location-dot text-red-500 mr-1"></i> Peta Distribusi
@@ -134,36 +147,26 @@
                     </div>
                   </div>
                 </div>
-                <p class="text-sm text-gray-600 leading-relaxed">
-                  Kunyit berkembang biak dengan rimpang. Membutuhkan tanah yang gembur, subur, dan sedikit naungan untuk pertumbuhan optimal. Di Indonesia, sentra produksi utama berada di Jawa Tengah dan Jawa Timur.
-                </p>
               </div>
 
               <!-- Tab 2: Benefits -->
               <div id="benefits" class="tab-content">
-                <h3 class="text-xl font-bold text-gray-900 mb-6">Manfaat Kesehatan & Bukti Ilmiah</h3>
+                <h3 class="text-xl font-bold text-gray-900 mb-6">Kandungan Aktif & Bukti Ilmiah</h3>
                 <div class="space-y-6">
+                  @forelse($herbal->activeCompounds as $compound)
                   <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100">
                     <h4 class="font-bold text-[#2E7D32] mb-2 flex items-center gap-2">
-                      <i class="fa-solid fa-shield-virus"></i> Anti-Inflamasi Alami
+                      <i class="fa-solid fa-flask"></i> {{ $compound->compound_name }}
                     </h4>
                     <p class="text-sm text-gray-600 leading-relaxed">
-                      Kurkumin dalam kunyit adalah senyawa bioaktif yang memiliki sifat anti-inflamasi yang sangat kuat, sebanding dengan beberapa obat anti-inflamasi komersial tanpa efek samping sistemik.
+                      {{ $compound->pharmacological_effect }}
                     </p>
                   </div>
-                  <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100">
-                    <h4 class="font-bold text-[#2E7D32] mb-2 flex items-center gap-2">
-                      <i class="fa-solid fa-flask"></i> Antioksidan Tinggi
-                    </h4>
-                    <p class="text-sm text-gray-600 leading-relaxed">
-                      Membantu menetralisir radikal bebas dan meningkatkan aktivitas enzim antioksidan dalam tubuh kita sendiri untuk melawan penuaan dini dan penyakit kronis.
-                    </p>
+                  @empty
+                  <div class="p-6 text-center text-gray-400">
+                      Belum ada data kandungan aktif.
                   </div>
-                  <div class="p-4 border-l-4 border-blue-500 bg-blue-50">
-                    <p class="text-xs text-blue-700 italic">
-                      "Studi meta-analisis pada 2019 menunjukkan bahwa kurkumin efektif meredakan gejala nyeri sendi (osteoarthritis) secara signifikan." - Jurnal Kedokteran Indonesia.
-                    </p>
-                  </div>
+                  @endforelse
                 </div>
               </div>
 
@@ -174,24 +177,18 @@
                   <div>
                     <h4 class="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
                       <span class="w-6 h-6 rounded-full bg-[#2E7D32] text-white text-[10px] flex items-center justify-center">1</span>
-                      Minuman Jamu Kunyit Asam
+                      Metode Pengolahan
                     </h4>
-                    <p class="text-sm text-gray-600 mb-3">Rebus 2 rimpang kunyit (parut) dengan 500ml air, tambahkan asam jawa dan gula merah secukupnya.</p>
-                    <div class="flex items-center gap-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                      <span><i class="fa-solid fa-clock mr-1"></i> 15 Menit</span>
-                      <span><i class="fa-solid fa-fire mr-1"></i> Sedang</span>
-                    </div>
+                    <p class="text-sm text-gray-600 mb-3">{{ $herbal->preparation_method ?? 'Metode belum tersedia.' }}</p>
                   </div>
                   <div>
                     <h4 class="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
                       <span class="w-6 h-6 rounded-full bg-[#2E7D32] text-white text-[10px] flex items-center justify-center">2</span>
-                      Dosis Keamanan
+                      Dosis & Panduan Konsumsi
                     </h4>
-                    <ul class="list-disc list-inside text-sm text-gray-600 space-y-2">
-                      <li>Bubuk: 1.5 - 3 gram per hari.</li>
-                      <li>Rimpang segar: 5 - 10 gram per hari.</li>
-                      <li>Sebaiknya dikonsumsi setelah makan.</li>
-                    </ul>
+                    <p class="text-sm text-gray-600 space-y-2">
+                      {{ $herbal->dosage_guide ?? 'Dosis belum tersedia.' }}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -200,26 +197,32 @@
               <div id="safety" class="tab-content">
                 <h3 class="text-xl font-bold text-red-600 mb-6">Kontraindikasi & Efek Samping</h3>
                 <div class="space-y-6">
-                  <div class="warning-box bg-[#FEF3C7] p-6 rounded-r-2xl">
-                    <h4 class="font-bold text-[#B45309] mb-2 flex items-center gap-2">
-                      <i class="fa-solid fa-triangle-exclamation"></i> Interaksi Obat
-                    </h4>
-                    <p class="text-sm text-[#B45309] opacity-80 leading-relaxed">
-                      Kunyit dapat mengencerkan darah. Hindari konsumsi dalam dosis besar jika Anda sedang dalam pengobatan pengencer darah (Warfarin, Aspirin) atau akan menjalani operasi.
-                    </p>
-                  </div>
-                  <div class="warning-box bg-[#FEF3C7] p-6 rounded-r-2xl">
-                    <h4 class="font-bold text-[#B45309] mb-2 flex items-center gap-2">
-                      <i class="fa-solid fa-person-pregnant"></i> Ibu Hamil & Menyusui
-                    </h4>
-                    <p class="text-sm text-[#B45309] opacity-80 leading-relaxed">
-                      Konsumsi sebagai bumbu masakan aman, namun suplemen kunyit dosis tinggi tidak disarankan karena dapat merangsang kontraksi rahim.
-                    </p>
-                  </div>
+                  
+                  @if($herbal->safety_warning)
                   <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100">
-                    <h4 class="text-sm font-bold text-gray-800 mb-2">Efek Samping Umum (Langka)</h4>
-                    <p class="text-sm text-gray-500">Mual, pusing, atau sakit perut jika dikonsumsi dalam dosis yang sangat berlebihan.</p>
+                    <h4 class="text-sm font-bold text-gray-800 mb-2">Peringatan Umum</h4>
+                    <p class="text-sm text-gray-500">{{ $herbal->safety_warning }}</p>
                   </div>
+                  @endif
+
+                  @forelse($herbal->interactions as $interaction)
+                  <div class="warning-box bg-[#FEF3C7] p-6 rounded-r-2xl">
+                    <h4 class="font-bold text-[#B45309] mb-2 flex items-center gap-2">
+                      <i class="fa-solid fa-triangle-exclamation"></i> {{ $interaction->title }}
+                    </h4>
+                    <p class="text-sm text-[#B45309] opacity-80 leading-relaxed mb-1">
+                      <span class="font-bold">Risiko:</span> {{ $interaction->severity }}
+                    </p>
+                    <p class="text-sm text-[#B45309] opacity-80 leading-relaxed">
+                      {{ $interaction->description }}
+                    </p>
+                  </div>
+                  @empty
+                  <div class="p-6 text-center text-gray-400">
+                      Belum ada data interaksi spesifik.
+                  </div>
+                  @endforelse
+
                 </div>
               </div>
 
@@ -231,38 +234,22 @@
         <div class="space-y-8">
           <!-- Related Plants -->
           <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
-            <h3 class="text-lg font-black text-gray-900 mb-6">Herbal Terkait</h3>
+            <h3 class="text-lg font-black text-gray-900 mb-6">Herbal Lainnya</h3>
             <div class="space-y-4">
-              <a href="detail-herbal.html" class="flex items-center gap-4 group">
+              @foreach($relatedHerbals as $related)
+              <a href="{{ route('detail-herbal', $related->id) }}" class="flex items-center gap-4 group">
                 <div class="w-16 h-16 rounded-xl overflow-hidden shrink-0">
-                  <img class="w-full h-full object-cover group-hover:scale-110 transition duration-300" src="https://images.unsplash.com/photo-1509358271058-acd05cc93898?auto=format&fit=crop&w=800&q=80" alt="fresh temulawak curcuma zanthorrhiza rhizome roots" />
+                  <img class="w-full h-full object-cover group-hover:scale-110 transition duration-300" src="{{ $related->image_url ?: 'https://images.unsplash.com/photo-1509358271058-acd05cc93898?auto=format&fit=crop&w=800&q=80' }}" alt="{{ $related->local_name }}" />
                 </div>
                 <div>
-                  <h4 class="text-sm font-bold text-gray-800 group-hover:text-[#2E7D32] transition">Temulawak</h4>
-                  <p class="text-xs text-gray-400 italic">Curcuma zanthorrhiza</p>
+                  <h4 class="text-sm font-bold text-gray-800 group-hover:text-[#2E7D32] transition">{{ $related->local_name }}</h4>
+                  <p class="text-xs text-gray-400 italic">{{ $related->scientific_name }}</p>
                 </div>
               </a>
-              <a href="detail-herbal.html" class="flex items-center gap-4 group">
-                <div class="w-16 h-16 rounded-xl overflow-hidden shrink-0">
-                  <img class="w-full h-full object-cover group-hover:scale-110 transition duration-300" src="https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80" alt="kaempferia galanga kencur aromatic ginger roots" />
-                </div>
-                <div>
-                  <h4 class="text-sm font-bold text-gray-800 group-hover:text-[#2E7D32] transition">Kencur</h4>
-                  <p class="text-xs text-gray-400 italic">Kaempferia galanga</p>
-                </div>
-              </a>
-              <a href="detail-herbal.html" class="flex items-center gap-4 group">
-                <div class="w-16 h-16 rounded-xl overflow-hidden shrink-0">
-                  <img class="w-full h-full object-cover group-hover:scale-110 transition duration-300" src="https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=800&q=80" alt="alpinia galanga lengkuas galangal roots" />
-                </div>
-                <div>
-                  <h4 class="text-sm font-bold text-gray-800 group-hover:text-[#2E7D32] transition">Lengkuas</h4>
-                  <p class="text-xs text-gray-400 italic">Alpinia galanga</p>
-                </div>
-              </a>
+              @endforeach
             </div>
-            <a href="herbal.html" class="w-full mt-6 text-[#2E7D32] font-bold text-sm py-3 rounded-xl bg-[#E8F5E9] hover:bg-[#2E7D32] hover:text-white transition text-center flex items-center justify-center">
-              Lihat Semua Database
+            <a href="{{ route('herbal') }}" class="w-full mt-6 text-[#2E7D32] font-bold text-sm py-3 rounded-xl bg-[#E8F5E9] hover:bg-[#2E7D32] hover:text-white transition text-center flex items-center justify-center">
+              Kembali ke Database
             </a>
           </div>
 
@@ -282,4 +269,7 @@
 
     </div>
   </main>
+
+  <script src="{{ asset('js/DetailSpesies.js') }}"></script>
+
 @endsection

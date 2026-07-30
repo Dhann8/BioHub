@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Herbal;
+use App\Models\Symptom;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -27,7 +28,13 @@ class HerbalController extends Controller
         }
 
         $herbals = $query->latest()->paginate(12);
-        return response()->json($herbals, 200);
+
+        if ($request->wantsJson() || $request->is('api/*')) {
+            return response()->json($herbals, 200);
+        }
+
+        $symptoms = Symptom::orderBy('symptom_name')->get();
+        return view('admin.herbal.page', compact('herbals', 'symptoms'));
     }
 
     // READ DETAIL: Tampilkan Detail Herbal Spesifik
@@ -72,7 +79,11 @@ class HerbalController extends Controller
             $herbal->symptoms()->attach($attachData);
         }
 
-        return response()->json(['message' => 'Data herbal berhasil ditambahkan', 'data' => $herbal->load('symptoms')], 201);
+        if ($request->wantsJson() || $request->is('api/*')) {
+            return response()->json(['message' => 'Data herbal berhasil ditambahkan', 'data' => $herbal->load('symptoms')], 201);
+        }
+
+        return redirect()->route('admin.herbal.index')->with('success', 'Data herbal berhasil ditambahkan!');
     }
 
     // UPDATE: Perbarui Data Herbal
@@ -103,7 +114,12 @@ class HerbalController extends Controller
         unset($validated['image']);
 
         $herbal->update($validated);
-        return response()->json(['message' => 'Data herbal berhasil diperbarui', 'data' => $herbal], 200);
+
+        if ($request->wantsJson() || $request->is('api/*')) {
+            return response()->json(['message' => 'Data herbal berhasil diperbarui', 'data' => $herbal], 200);
+        }
+
+        return redirect()->route('admin.herbal.index')->with('success', 'Data herbal berhasil diperbarui!');
     }
 
     // READ & WIZARD: Symptom-to-Remedy Recommendation Engine
@@ -145,6 +161,10 @@ class HerbalController extends Controller
         $herbal = Herbal::findOrFail($id);
         $herbal->delete();
 
-        return response()->json(['message' => 'Data herbal berhasil diarsipkan (soft delete)'], 200);
+        if (request()->wantsJson() || request()->is('api/*')) {
+            return response()->json(['message' => 'Data herbal berhasil diarsipkan (soft delete)'], 200);
+        }
+
+        return redirect()->back()->with('success', 'Data herbal berhasil dihapus!');
     }
 }

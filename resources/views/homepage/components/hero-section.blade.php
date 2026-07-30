@@ -1,12 +1,7 @@
-<section id="hero" class="relative pt-16 h-[780px] overflow-hidden">
+﻿<section id="hero" class="relative pt-16 h-[780px] overflow-hidden">
     <img class="absolute inset-0 w-full h-full object-cover" src="{{ asset('image/bg_hero.webp') }}" alt="lush tropical rainforest Indonesia aerial view with exotic flora and fauna, misty jungle canopy, vib" />
     <div class="hero-bg absolute inset-0"></div>
     <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center items-center text-center">
-      {{-- Badge --}}
-      <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/30 rounded-full px-4 py-1.5 mb-6">
-        <span class="w-2 h-2 rounded-full bg-[#ff8800] animate-ping inline-block"></span>
-        <span class="text-white text-xs font-medium tracking-wide uppercase">Platform Keanekaragaman Hayati Indonesia</span>
-      </div>
       {{-- heading --}}
       <h1 class="text-4xl md:text-5xl lg:text-6xl font-black text-white leading-tight max-w-4xl mb-5">
         Jelajahi Flora, Fauna <span class="text-[#f08000]">Endemik</span> &amp; Kearifan Herbal Nusantara
@@ -40,16 +35,16 @@
 
       <!-- Quick Filters -->
       <div class="flex flex-wrap justify-center gap-3 mt-5">
-        <a href="satwa.html" class="flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/30 text-white text-xs font-medium px-4 py-2 rounded-full transition">
+        <a href="{{ route('spesies') }}" class="flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/30 text-white text-xs font-medium px-4 py-2 rounded-full transition">
           <i class="fa-solid fa-paw"></i>Fauna Endemik
         </a>
-        <a href="satwa.html" class="flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/30 text-white text-xs font-medium px-4 py-2 rounded-full transition">
+        <a href="{{ route('spesies') }}" class="flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/30 text-white text-xs font-medium px-4 py-2 rounded-full transition">
           <i class="fa-solid fa-seedling"></i>Flora Dilindungi
         </a>
-        <a href="herbal.html" class="flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/30 text-white text-xs font-medium px-4 py-2 rounded-full transition">
+        <a href="{{ route('herbal') }}" class="flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/30 text-white text-xs font-medium px-4 py-2 rounded-full transition">
           <i class="fa-solid fa-mortar-pestle"></i>Obat Herbal
         </a>
-        <a href="peta-interaktif.html" class="flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/30 text-white text-xs font-medium px-4 py-2 rounded-full transition">
+        <a href="{{ route('map') }}" class="flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/30 text-white text-xs font-medium px-4 py-2 rounded-full transition">
           <i class="fa-solid fa-map-location-dot"></i>Peta Spesies
         </a>
       </div>

@@ -32,69 +32,30 @@
             </button>
           </div>
 
-          <a href="herbal.html" class="bg-[#2E7D32] hover:bg-[#1B5E20] text-white font-semibold px-8 py-3.5 rounded-xl inline-flex items-center gap-2 transition">
+          <a href="{{ route('herbal') }}" class="bg-[#2E7D32] hover:bg-[#1B5E20] text-white font-semibold px-8 py-3.5 rounded-xl inline-flex items-center gap-2 transition">
             <i class="fa-solid fa-magnifying-glass"></i>Cari Herbal Sekarang
           </a>
         </div>
 
         <!-- Right: Herb Cards -->
         <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-5">
-          <!-- Card 1 -->
-          <a href="detail-herbal.html" class="herb-card bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 cursor-pointer block">
+          @foreach($herbals as $herbal)
+          <!-- Card -->
+          <a href="{{ route('detail-herbal', $herbal->id) }}" class="herb-card bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 cursor-pointer block">
             <div class="h-40 overflow-hidden">
-              <img class="w-full h-full object-cover" src="https://storage.googleapis.com/uxpilot-auth.appspot.com/gen_6ba8a92af3_ac9c9f8415f6ac80.png" alt="fresh ginger root and turmeric slices on natural wooden surface, Indonesian herbal medicine, warm to" />
+              <img class="w-full h-full object-cover" src="{{ $herbal->image_url ?: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/gen_6ba8a92af3_ac9c9f8415f6ac80.png' }}" alt="{{ $herbal->local_name }}" />
             </div>
             <div class="p-4">
               <div class="flex items-center justify-between mb-2">
-                <span class="text-xs font-semibold bg-[#E8F5E9] text-[#2E7D32] px-2 py-1 rounded-full">Anti-inflamasi</span>
-                <span class="text-xs text-gray-400"><i class="fa-solid fa-star text-[#D97706]"></i> 4.8</span>
+                <span class="text-xs font-semibold {{ $herbal->evidence_level === 'Clinical_Trial' ? 'bg-[#E8F5E9] text-[#2E7D32]' : 'bg-[#FEF3C7] text-[#D97706]' }} px-2 py-1 rounded-full">
+                  {{ $herbal->evidence_level === 'Clinical_Trial' ? 'Uji Klinis' : 'Empiris' }}
+                </span>
               </div>
-              <h3 class="font-bold text-gray-800 text-sm mb-1">Jahe & Kunyit</h3>
-              <p class="text-xs text-gray-500">Efektif untuk demam, nyeri, dan meningkatkan imunitas tubuh.</p>
+              <h3 class="font-bold text-gray-800 text-sm mb-1">{{ $herbal->local_name }}</h3>
+              <p class="text-xs text-gray-500">{{ Str::limit($herbal->description, 60) }}</p>
             </div>
           </a>
-          <!-- Card 2 -->
-          <a href="detail-herbal.html" class="herb-card bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 cursor-pointer block">
-            <div class="h-40 overflow-hidden">
-              <img class="w-full h-full object-cover" src="https://storage.googleapis.com/uxpilot-auth.appspot.com/gen_d6c5be637a_b834564485960f62.png" alt="fresh noni morinda citrifolia fruit and leaves on tropical background, Indonesian herbal plant, vivi" />
-            </div>
-            <div class="p-4">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-xs font-semibold bg-[#FEF3C7] text-[#D97706] px-2 py-1 rounded-full">Antibakteri</span>
-                <span class="text-xs text-gray-400"><i class="fa-solid fa-star text-[#D97706]"></i> 4.5</span>
-              </div>
-              <h3 class="font-bold text-gray-800 text-sm mb-1">Mengkudu</h3>
-              <p class="text-xs text-gray-500">Digunakan untuk tekanan darah dan infeksi bakteri.</p>
-            </div>
-          </a>
-          <!-- Card 3 -->
-          <a href="detail-herbal.html" class="herb-card bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 cursor-pointer block">
-            <div class="h-40 overflow-hidden">
-              <img class="w-full h-full object-cover" src="https://storage.googleapis.com/uxpilot-auth.appspot.com/gen_7a2162a989_2a02991e79982d29.png" alt="lemongrass and pandan leaves bundle, Indonesian herbal cooking ingredients, fresh green, natural lig" />
-            </div>
-            <div class="p-4">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-xs font-semibold bg-[#E8F5E9] text-[#2E7D32] px-2 py-1 rounded-full">Digestif</span>
-                <span class="text-xs text-gray-400"><i class="fa-solid fa-star text-[#D97706]"></i> 4.7</span>
-              </div>
-              <h3 class="font-bold text-gray-800 text-sm mb-1">Sereh & Pandan</h3>
-              <p class="text-xs text-gray-500">Membantu melancarkan pencernaan dan meredakan kembung.</p>
-            </div>
-          </a>
-          <!-- Card 4 -->
-          <a href="detail-herbal.html" class="herb-card bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 cursor-pointer block">
-            <div class="h-40 overflow-hidden">
-              <img class="w-full h-full object-cover" src="https://storage.googleapis.com/uxpilot-auth.appspot.com/gen_63cb4c3b07_0e3641918bb56514.png" alt="temulawak curcuma zanthorrhiza rhizome roots, Indonesian jamu herbal medicine, warm orange tones, st" />
-            </div>
-            <div class="p-4">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-xs font-semibold bg-[#FEF3C7] text-[#D97706] px-2 py-1 rounded-full">Hepatoprotektor</span>
-                <span class="text-xs text-gray-400"><i class="fa-solid fa-star text-[#D97706]"></i> 4.9</span>
-              </div>
-              <h3 class="font-bold text-gray-800 text-sm mb-1">Temulawak</h3>
-              <p class="text-xs text-gray-500">Melindungi hati dan meningkatkan nafsu makan anak.</p>
-            </div>
-          </a>
+          @endforeach
         </div>
       </div>
     </div>

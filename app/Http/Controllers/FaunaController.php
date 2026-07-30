@@ -3,19 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Fauna;
+use App\Models\Taxonomy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class FaunaController extends Controller
 {
     /**
-     * READ: Menampilkan Katalog Fauna dengan Filter Wizard & Live Search
+     * Menampilkan daftar fauna dengan filter (untuk publik / web & API)
      */
     public function index(Request $request)
     {
         $query = Fauna::with(['taxonomy', 'locations']);
 
-        // 1. Live Search (Nama Lokal & Nama Ilmiah)
+        // Filter Pencarian Nama
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -24,22 +25,30 @@ class FaunaController extends Controller
             });
         }
 
-        // 2. Filter Status IUCN (CR, EN, VU, NT, LC)
+        // Filter Status IUCN
         if ($request->filled('iucn_status')) {
             $query->where('iucn_status', $request->iucn_status);
         }
 
-        // 3. Filter Kategori Taksonomi
+        // Filter Taksonomi berdasarkan ID
         if ($request->filled('taxonomy_id')) {
             $query->where('taxonomy_id', $request->taxonomy_id);
         }
 
-        // 4. [FILTER WIZARD] Ukuran Tubuh (Kecil, Sedang, Besar)
+        // Filter Taksonomi berdasarkan nama (class_name) untuk wizard
+        if ($request->filled('taxonomy')) {
+            $taxonomyName = $request->taxonomy;
+            $query->whereHas('taxonomy', function ($q) use ($taxonomyName) {
+                $q->where('class_name', 'like', '%' . $taxonomyName . '%');
+            });
+        }
+
+        // Filter Ukuran
         if ($request->filled('size')) {
             $query->where('size', $request->size);
         }
 
-        // 5. [FILTER WIZARD] Fitur Unik (JSON Array Search)
+        // Filter Ciri Fisik (JSON)
         if ($request->filled('features')) {
             $features = is_array($request->features) ? $request->features : explode(',', $request->features);
             foreach ($features as $feature) {
@@ -47,7 +56,7 @@ class FaunaController extends Controller
             }
         }
 
-        // 6. [FILTER WIZARD] Wilayah Habitat (Query Relasi FaunaLocations)
+        // Filter Wilayah
         if ($request->filled('region')) {
             $region = $request->region;
             $query->whereHas('locations', function ($q) use ($region) {
@@ -55,24 +64,49 @@ class FaunaController extends Controller
             });
         }
 
-        $faunas = $query->latest()->paginate(12);
-        return response()->json($faunas, 200);
+        $perPage = $request->get('per_page', 12);
+        $faunas = $query->latest()->paginate($perPage);
+        $taxonomies = Taxonomy::all();
+
+        // Respon JSON untuk Request API / AJAX
+        if ($request->wantsJson() || $request->is('api/*')) {
+            return response()->json($faunas, 200);
+        }
+
+        if ($request->is('admin/*')) {
+            return view('admin.fauna.page', compact('faunas', 'taxonomies'));
+        }
+
+        return view('spesies.page', compact('faunas', 'taxonomies'));
     }
 
     /**
-     * READ DETAIL: Tampilkan Detail Satwa Spesifik
+     * Detail Fauna
      */
     public function show($id)
     {
         $fauna = Fauna::with(['taxonomy', 'locations'])->findOrFail($id);
-        return response()->json(['data' => $fauna], 200);
+
+        if (request()->wantsJson() || request()->is('api/*')) {
+            return response()->json(['data' => $fauna], 200);
+        }
+
+        return view('users.fauna.show', compact('fauna'));
     }
 
     /**
-     * CREATE: Tambah Data Satwa Baru (Admin Only)
+     * Menyimpan data fauna baru
      */
     public function store(Request $request)
     {
+        // Konversi input string koma ke array jika dikirim dari form biasa
+        if ($request->filled('physical_features_input') && !$request->has('physical_features')) {
+            $input = $request->input('physical_features_input');
+            $request->merge([
+                'physical_features' => array_filter(array_map('trim', explode(',', $input)))
+            ]);
+        }
+
         $validated = $request->validate([
             'taxonomy_id'       => 'required|exists:taxonomies,id',
             'local_name'        => 'required|string|max:255',
@@ -83,7 +117,10 @@ class FaunaController extends Controller
             'physical_features.*' => 'string',
             'primary_habitat'   => 'nullable|string|max:255',
             'description'       => 'required|string',
-            'image'             => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048'
+            'image'             => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'region_name'       => 'nullable|string|max:255',
+            'latitude'          => 'nullable|numeric|between:-90,90',
+            'longitude'         => 'nullable|numeric|between:-180,180',
         ], [
             'taxonomy_id.required' => 'Kategori taksonomi wajib dipilih.',
             'taxonomy_id.exists'   => 'Kategori taksonomi tidak ditemukan.',
@@ -104,16 +141,44 @@ class FaunaController extends Controller
 
         unset($validated['image']);
 
+        $locationData = [
+            'region_name' => $validated['region_name'] ?? null,
+            'latitude'    => $validated['latitude'] ?? null,
+            'longitude'   => $validated['longitude'] ?? null,
+        ];
+        unset($validated['region_name'], $validated['latitude'], $validated['longitude']);
+
         $fauna = Fauna::create($validated);
-        return response()->json(['message' => 'Data fauna berhasil ditambahkan', 'data' => $fauna], 201);
+
+        if (!empty($locationData['region_name'])) {
+            $fauna->locations()->create([
+                'region_name' => $locationData['region_name'],
+                'latitude'    => $locationData['latitude'] ?? 0,
+                'longitude'   => $locationData['longitude'] ?? 0,
+            ]);
+        }
+
+        if ($request->wantsJson() || $request->is('api/*')) {
+            return response()->json(['message' => 'Data fauna berhasil ditambahkan', 'data' => $fauna->load('locations')], 201);
+        }
+
+        return redirect()->back()->with('success', 'Spesies fauna ' . $fauna->local_name . ' berhasil ditambahkan!');
     }
 
     /**
-     * UPDATE: Perbarui Data Satwa
+     * Memperbarui data fauna
      */
     public function update(Request $request, $id)
     {
         $fauna = Fauna::findOrFail($id);
+
+        // Tambahkan parsing string ke array pada update
+        if ($request->filled('physical_features_input') && !$request->has('physical_features')) {
+            $input = $request->input('physical_features_input');
+            $request->merge([
+                'physical_features' => array_filter(array_map('trim', explode(',', $input)))
+            ]);
+        }
 
         $validated = $request->validate([
             'taxonomy_id'       => 'sometimes|required|exists:taxonomies,id',
@@ -125,10 +190,14 @@ class FaunaController extends Controller
             'physical_features.*' => 'string',
             'primary_habitat'   => 'nullable|string|max:255',
             'description'       => 'sometimes|required|string',
-            'image'             => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048'
+            'image'             => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'region_name'       => 'nullable|string|max:255',
+            'latitude'          => 'nullable|numeric|between:-90,90',
+            'longitude'         => 'nullable|numeric|between:-180,180',
         ]);
 
         if ($request->hasFile('image')) {
+            // Hapus foto lama jika ada
             if ($fauna->image_url) {
                 $oldPath = str_replace('/storage/', '', $fauna->image_url);
                 Storage::disk('public')->delete($oldPath);
@@ -139,23 +208,59 @@ class FaunaController extends Controller
 
         unset($validated['image']);
 
+        $regionName = $validated['region_name'] ?? null;
+        $latitude = $validated['latitude'] ?? null;
+        $longitude = $validated['longitude'] ?? null;
+        unset($validated['region_name'], $validated['latitude'], $validated['longitude']);
+
         $fauna->update($validated);
-        return response()->json(['message' => 'Data fauna berhasil diperbarui', 'data' => $fauna], 200);
+
+        if (!empty($regionName)) {
+            $fauna->locations()->create([
+                'region_name' => $regionName,
+                'latitude'    => $latitude ?? 0,
+                'longitude'   => $longitude ?? 0,
+            ]);
+        }
+
+        if ($request->wantsJson() || $request->is('api/*')) {
+            return response()->json(['message' => 'Data fauna berhasil diperbarui', 'data' => $fauna->load('locations')], 200);
+        }
+
+        return redirect()->back()->with('success', 'Data fauna berhasil diperbarui!');
     }
 
     /**
-     * DELETE: Soft Delete Data Satwa
+     * Hapus Data Fauna
      */
-    public function destroy($id)
-    {
-        $fauna = Fauna::findOrFail($id);
-        $fauna->delete();
-
-        return response()->json(['message' => 'Data fauna berhasil dihapus (soft delete)'], 200);
+public function destroy($id)
+{
+    $fauna = Fauna::findOrFail($id);
+    
+    // 1. Hapus gambar dari storage jika ada
+    if ($fauna->image_url) {
+        $oldPath = str_replace('/storage/', '', $fauna->image_url);
+        Storage::disk('public')->delete($oldPath);
     }
 
+    // 2. Hapus relasi lokasi terlebih dahulu agar tidak kena Foreign Key Error
+    if (method_exists($fauna, 'locations')) {
+        $fauna->locations()->delete();
+    }
+
+    // 3. Hapus data fauna
+    $fauna->delete();
+
+    // 4. Return response sesuai request
+    if (request()->wantsJson() || request()->is('api/*')) {
+        return response()->json(['message' => 'Data fauna berhasil dihapus'], 200);
+    }
+
+    return redirect()->back()->with('success', 'Data fauna berhasil dihapus!');
+}
+
     /**
-     * READ: API Koordinat untuk Peta GIS Interaktif
+     * Mendapatkan lokasi koordinat peta fauna
      */
     public function getMapLocations()
     {

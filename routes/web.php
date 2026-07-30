@@ -3,12 +3,20 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FaunaController;
+use App\Http\Controllers\FaunaLocationController;
+use App\Http\Controllers\FaunaDetailController;
 use App\Http\Controllers\HerbalController;
+use App\Http\Controllers\HerbalDetailController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\ContributionController;
 use App\Models\Fauna;
 use App\Models\Taxonomy;
 use App\Models\Herbal;
 use App\Models\Symptom;
+use App\Models\FaunaLocation;
+use App\Models\Contribution;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 
 Route::get('/', function () {
@@ -18,36 +26,34 @@ Route::get('/', function () {
 })->name('homepage');
 
 // Katalog & Detail Fauna
-Route::get('/satwa', function () {
-    $faunas = Fauna::with('taxonomy', 'locations')->latest()->get();
-    $taxonomies = Taxonomy::withCount('faunas')->get();
-    return view('satwa.page', compact('faunas', 'taxonomies'));
-})->name('satwa');
+Route::get('/spesies', function () {
+    $taxonomies = Taxonomy::all();
+    return view('spesies.page', compact('taxonomies'));
+})->name('spesies');
 
-Route::get('/detail-satwa/{id?}', function ($id = null) {
+Route::get('/detail-spesies/{id?}', function ($id = null) {
     $fauna = $id 
         ? Fauna::with('taxonomy', 'locations')->find($id) 
         : Fauna::with('taxonomy', 'locations')->first();
 
     if (!$fauna) {
-        return redirect()->route('satwa');
+        return redirect()->route('spesies');
     }
 
     $relatedFaunas = Fauna::where('id', '!=', $fauna->id)->take(3)->get();
-    return view('detail-satwa.page', compact('fauna', 'relatedFaunas'));
-})->name('detail-satwa');
+    return view('detail-spesies.page', compact('fauna', 'relatedFaunas'));
+})->name('detail-spesies');
 
 // Katalog & Detail Herbal (TOGA)
 Route::get('/herbal', function () {
-    $herbals = Herbal::latest()->get();
+    $herbals = Herbal::with(['symptoms', 'activeCompounds'])->latest()->get();
     return view('herbal.page', compact('herbals'));
 })->name('herbal');
 
 Route::get('/detail-herbal/{id?}', function ($id = null) {
-    // FIX: Menggunakan relasi 'symptoms' (Bukan 'taxonomy'/'locations')
     $herbal = $id 
-        ? Herbal::with('symptoms')->find($id) 
-        : Herbal::with('symptoms')->first();
+        ? Herbal::with(['symptoms', 'activeCompounds', 'interactions', 'gallery'])->find($id) 
+        : Herbal::with(['symptoms', 'activeCompounds', 'interactions', 'gallery'])->first();
 
     if (!$herbal) {
         return redirect()->route('herbal');
@@ -59,31 +65,43 @@ Route::get('/detail-herbal/{id?}', function ($id = null) {
 
 
 Route::get('/map', function () {
-    return view('peta-interaktif.page');
+    $faunas = \App\Models\Fauna::with(['taxonomy', 'locations'])->get();
+    $herbals = \App\Models\Herbal::get();
+    return view('peta-interaktif.page', compact('faunas', 'herbals'));
 })->name('map');
 
-
-
-// Herbal Consultation Wizard (Symptom-to-Remedy)
 Route::get('/wizard/herbal', function () {
-    $symptoms = Symptom::all();
-    return view('wizard.herbal', compact('symptoms'));
+    return redirect()->route('herbal');
 })->name('wizard.herbal');
 
 Route::post('/wizard/herbal/search', [HerbalController::class, 'findBySymptom'])->name('wizard.herbal.search');
 
-// Fauna Identification Wizard
 Route::get('/wizard/fauna', function () {
-    $taxonomies = Taxonomy::all();
-    return view('wizard.fauna', compact('taxonomies'));
+    return redirect()->route('spesies');
 })->name('wizard.fauna');
 
-// Web GIS Map Data (Endpoints JSON untuk Leaflet.js)
 Route::get('/api/gis/fauna-locations', [FaunaController::class, 'getMapLocations'])->name('api.gis.fauna');
 
+Route::get('/riset', function () {
+    return view('riset.page');
+})->name('riset');
+
+Route::get('/kontribusi', function () {
+    $myContributions = Auth::check()
+        ? Contribution::where('user_id', Auth::id())
+            ->with('reviewer:id,name')
+            ->latest()
+            ->get()
+        : collect();
+    return view('kontribusi.page', compact('myContributions'));
+})->name('kontribusi');
 
 Route::middleware('guest')->group(function () {
-    // Login
+    // Admin Login Routes
+    Route::get('/admin/login', [AuthController::class, 'showAdminLoginForm'])->name('admin.login');
+    Route::post('/admin/login', [AuthController::class, 'adminLogin'])->name('admin.login.post');
+
+    // User Login
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 
@@ -99,26 +117,59 @@ Route::middleware('guest')->group(function () {
     Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 });
 
-
 Route::middleware('auth')->group(function () {
     // Logout
     Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
 
-    // Crowdsourcing (Masyarakat Mengirimkan Usulan Data Baru)
+    // Crowdsourcing
     Route::post('/contribute', [ContributionController::class, 'submitContribution'])->name('contribute.submit');
 
-    // Grouping Dashboard Admin / Pakar (RBAC)
+    // Admin Grouping
     Route::prefix('admin')->name('admin.')->group(function () {
-        // Dashboard Overview
         Route::get('/dashboard', function () {
-            return view('admin.dashboard');
+            if (Auth::user()->role !== 'admin') {
+                return redirect()->route('homepage')->with('error', 'Anda tidak memiliki hak akses ke Panel Admin.');
+            }
+
+            $totalFauna = Fauna::count();
+            $totalHerbal = Herbal::count();
+            $totalGis = FaunaLocation::count();
+            $pendingCount = Contribution::where('status', 'pending')->count();
+
+            $contributions = Contribution::with('author')->latest()->get();
+            $recentLogs = Contribution::with(['author', 'reviewer'])->latest()->take(6)->get();
+
+            $iucnCounts = Fauna::select('iucn_status', DB::raw('count(*) as total'))
+                ->groupBy('iucn_status')
+                ->pluck('total', 'iucn_status')
+                ->toArray();
+
+            $taxonomies = Taxonomy::all();
+
+            return view('admin.dashboard', compact(
+                'totalFauna',
+                'totalHerbal',
+                'totalGis',
+                'pendingCount',
+                'contributions',
+                'recentLogs',
+                'iucnCounts',
+                'taxonomies'
+            ));
         })->name('dashboard');
 
-        // CRUD Management Routes
         Route::resource('fauna', FaunaController::class)->except(['show']);
+        Route::resource('fauna-locations', FaunaLocationController::class)->only(['index', 'store', 'destroy']);
+        Route::get('/fauna-details', [FaunaDetailController::class, 'index'])->name('fauna-details.index');
+        Route::post('/fauna-details/{id}', [FaunaDetailController::class, 'update'])->name('fauna-details.update');
         Route::resource('herbal', HerbalController::class)->except(['show']);
-
-        // Moderation Crowdsourcing Queue
+        Route::get('/herbal-details', [HerbalDetailController::class, 'index'])->name('herbal-details.index');
+        Route::post('/herbal-details/{id}', [HerbalDetailController::class, 'update'])->name('herbal-details.update');
+        Route::resource('users', UserController::class)->only(['index', 'store', 'update', 'destroy']);
         Route::patch('/contributions/{id}/moderate', [ContributionController::class, 'moderateContribution'])->name('contributions.moderate');
+        Route::post('/contributions/{id}/approve', [ContributionController::class, 'approveContribution'])->name('contributions.approve');
+        Route::post('/contributions/{id}/reject', [ContributionController::class, 'rejectContribution'])->name('contributions.reject');
+        Route::get('/crowdsourcing', [ContributionController::class, 'adminIndex'])->name('crowdsourcing.index');
+        Route::delete('/fauna/{id}', [FaunaController::class, 'destroy'])->name('fauna.destroy');
     });
 });

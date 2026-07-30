@@ -9,9 +9,8 @@ class Taxonomy extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['class_name','slug'];
+    protected $fillable = ['class_name', 'slug', 'kingdom', 'phylum', 'order', 'family'];
 
-    // Relasi 1-to-Many: 1 Kategori Taksonomi memiliki Banyak Satwa (Fauna)
     public function faunas()
     {
         return $this->hasMany(Fauna::class);

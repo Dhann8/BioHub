@@ -13,39 +13,64 @@
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        <!-- Sample Card 1 -->
-        <div class="bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group">
-          <div class="h-48 overflow-hidden relative">
-            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://storage.googleapis.com/uxpilot-auth.appspot.com/gen_406677de74_9ea41c602647f79b.png" alt="Sumatran tiger stalking in green grass, wildlife photography" />
-            <span class="absolute top-4 left-4 bg-status-cr text-white text-[10px] font-black px-3 py-1.5 rounded-lg shadow-lg">CR</span>
+        @foreach($faunas as $fauna)
+        @php
+            $assignedRegion = "Semua Wilayah";
+            if (str_contains(strtolower($fauna->local_name), 'sumatra')) $assignedRegion = "Sumatra";
+            elseif (str_contains(strtolower($fauna->local_name), 'komodo')) $assignedRegion = "Nusa Tenggara & Bali";
+            elseif (str_contains(strtolower($fauna->local_name), 'cendrawasih')) $assignedRegion = "Papua";
+        @endphp
+        <!-- Dynamic Card -->
+        <div class="grid-card-container bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group"
+             data-name="{{ strtolower($fauna->local_name) }}"
+             data-status="{{ strtolower($fauna->iucn_status) }}"
+             data-category="fauna"
+             data-region="{{ $assignedRegion }}"
+             >
+          <div class="h-48 overflow-hidden relative cursor-pointer" onclick="openDrawer('fauna_{{ $fauna->id }}'); toggleView('map');">
+            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="{{ $fauna->image_url ?: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/gen_406677de74_9ea41c602647f79b.png' }}" alt="{{ $fauna->local_name }}" />
+            <span class="absolute top-4 left-4 bg-status-{{ strtolower($fauna->iucn_status) }} text-white text-[10px] font-black px-3 py-1.5 rounded-lg shadow-lg">{{ $fauna->iucn_status }}</span>
           </div>
           <div class="p-6">
-            <p class="text-[10px] font-bold text-amber-accent uppercase tracking-widest mb-1">Mammalia</p>
-            <h3 class="font-black text-gray-900 mb-0.5">Harimau Sumatra</h3>
-            <p class="text-xs italic text-gray-400 mb-4">Panthera tigris sumatrae</p>
+            <p class="text-[10px] font-bold text-amber-accent uppercase tracking-widest mb-1">{{ $fauna->taxonomy->class_name ?? 'Fauna' }}</p>
+            <h3 class="font-black text-gray-900 mb-0.5">{{ $fauna->local_name }}</h3>
+            <p class="text-xs italic text-gray-400 mb-4">{{ $fauna->scientific_name }}</p>
             <div class="flex items-center justify-between text-[10px] font-bold text-gray-400 uppercase border-t border-gray-50 pt-4">
-              <span>Pop: <span class="text-gray-900">~400</span></span>
-              <span>Tren: <span class="text-status-cr">Kritis</span></span>
+              <span>Pop: <span class="text-gray-900">N/A</span></span>
+              <span>Tren: <span class="text-status-{{ strtolower($fauna->iucn_status) }}">{{ $fauna->iucn_status }}</span></span>
             </div>
           </div>
         </div>
-        <!-- Card 2 -->
-        <div class="bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group">
-          <div class="h-48 overflow-hidden relative">
-            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://storage.googleapis.com/uxpilot-auth.appspot.com/gen_7ae549a4c2_576d1ef06a77f38a.png" alt="Rafflesia arnoldii flower in the wild, macro photography" />
-            <span class="absolute top-4 left-4 bg-status-en text-white text-[10px] font-black px-3 py-1.5 rounded-lg shadow-lg">EN</span>
+        @endforeach
+
+        @foreach($herbals as $herbal)
+        @php
+            $assignedRegion = "Semua Wilayah";
+            if (str_contains(strtolower($herbal->local_name), 'papua')) $assignedRegion = "Papua";
+            if (str_contains(strtolower($herbal->local_name), 'jawa')) $assignedRegion = "Jawa";
+        @endphp
+        <!-- Dynamic Card -->
+        <div class="grid-card-container hidden bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group"
+             data-name="{{ strtolower($herbal->local_name) }}"
+             data-status="lc"
+             data-category="flora"
+             data-region="{{ $assignedRegion }}"
+             >
+          <div class="h-48 overflow-hidden relative cursor-pointer" onclick="openDrawer('flora_{{ $herbal->id }}'); toggleView('map');">
+            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="{{ $herbal->image_url ?: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/gen_7ae549a4c2_576d1ef06a77f38a.png' }}" alt="{{ $herbal->local_name }}" />
+            <span class="absolute top-4 left-4 bg-status-lc text-white text-[10px] font-black px-3 py-1.5 rounded-lg shadow-lg">LC</span>
           </div>
           <div class="p-6">
-            <p class="text-[10px] font-bold text-amber-accent uppercase tracking-widest mb-1">Flora</p>
-            <h3 class="font-black text-gray-900 mb-0.5">Rafflesia Arnoldii</h3>
-            <p class="text-xs italic text-gray-400 mb-4">Rafflesia arnoldii</p>
+            <p class="text-[10px] font-bold text-amber-accent uppercase tracking-widest mb-1">{{ $herbal->plant_family ?? 'Flora' }}</p>
+            <h3 class="font-black text-gray-900 mb-0.5">{{ $herbal->local_name }}</h3>
+            <p class="text-xs italic text-gray-400 mb-4">{{ $herbal->scientific_name }}</p>
             <div class="flex items-center justify-between text-[10px] font-bold text-gray-400 uppercase border-t border-gray-50 pt-4">
-              <span>Pop: <span class="text-gray-900">Langka</span></span>
-              <span>Tren: <span class="text-status-en">Menurun</span></span>
+              <span>Pop: <span class="text-gray-900">N/A</span></span>
+              <span>Tren: <span class="text-status-lc">Stabil</span></span>
             </div>
           </div>
         </div>
-        <!-- Add more cards as needed -->
+        @endforeach
       </div>
     </div>
   </div>

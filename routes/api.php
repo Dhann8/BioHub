@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FaunaController;
 use App\Http\Controllers\HerbalController;
 use App\Http\Controllers\ContributionController;
+use App\Http\Controllers\PaperController;
 
 // Fauna API Routes (/api/fauna)
 Route::prefix('fauna')->group(function () {
@@ -32,3 +33,12 @@ Route::prefix('contribution')->group(function () {
     Route::post('/submit', [ContributionController::class, 'submitContribution'])->name('contribution.submit');
     Route::put('/{id}/moderate', [ContributionController::class, 'moderateContribution'])->name('contribution.moderate');
 });
+
+// Contribution API Routes (/api/papers)
+Route::prefix('papers')->group(function () {
+    Route::get('/', [PaperController::class, 'index'])->name('papers.index');
+    Route::get('/most-cited', [PaperController::class, 'mostCited'])->name('papers.most-cited');
+    Route::get('/{id}/download', [PaperController::class, 'download'])->name('papers.download');
+});
+
+

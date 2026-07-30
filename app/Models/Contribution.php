@@ -19,19 +19,19 @@ class Contribution extends Model
         'longitude',
         'status',
         'reviewed_by',
+        'moderator_notes',
     ];
 
-    /**
-     * Relasi BelongsTo: Dibuat oleh seorang User.
-     */
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    /**
-     * Relasi BelongsTo: Diresensi/Direview oleh Admin (User).
-     */
+    public function author()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
     public function reviewer()
     {
         return $this->belongsTo(User::class, 'reviewed_by');

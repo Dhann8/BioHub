@@ -9,7 +9,7 @@
           <h2 class="text-3xl md:text-4xl font-black text-gray-900">Peta Hotspot <span class="text-[#2E7D32]">Keanekaragaman Hayati</span></h2>
           <p class="text-gray-500 mt-2 max-w-xl text-sm leading-relaxed">Temukan persebaran spesies endemik dan area konservasi di seluruh penjuru Nusantara.</p>
         </div>
-        <a href="peta-interaktif.html" class="inline-flex items-center gap-2 text-sm font-semibold text-[#2E7D32] hover:text-[#1B5E20] border border-[#2E7D32] rounded-xl px-5 py-2.5 transition self-start md:self-auto">
+        <a href="{{ route('map') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-[#2E7D32] hover:text-[#1B5E20] border border-[#2E7D32] rounded-xl px-5 py-2.5 transition self-start md:self-auto">
           Buka Peta Penuh <i class="fa-solid fa-arrow-right text-xs"></i>
         </a>
       </div>
@@ -74,7 +74,7 @@
         <div class="absolute top-5 right-5 bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow text-xs max-w-[180px]">
           <p class="font-semibold text-gray-700 mb-1"><i class="fa-solid fa-fire text-[#D97706] mr-1"></i>Hotspot Aktif</p>
           <p class="text-gray-500">Kalimantan Timur — 120 spesies terancam punah terdeteksi</p>
-          <a href="peta-interaktif.html" class="text-[#2E7D32] font-semibold mt-2 inline-block hover:underline">Lihat Detail →</a>
+          <a href="{{ route('map') }}" class="text-[#2E7D32] font-semibold mt-2 inline-block hover:underline">Lihat Detail →</a>
         </div>
       </div>
 

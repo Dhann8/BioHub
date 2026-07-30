@@ -14,9 +14,7 @@ class Symptom extends Model
         'icon_svg',
     ];
 
-    /**
-     * Relasi Many-to-Many: Gejala bisa diobati oleh banyak Herbal.
-     */
+
     public function herbals()
     {
         return $this->belongsToMany(Herbal::class, 'herbal_symptom')

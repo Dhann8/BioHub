@@ -11,43 +11,48 @@
           </a>
           <p class="text-sm leading-relaxed mb-5 max-w-xs">Platform keanekaragaman hayati dan kearifan herbal Indonesia terlengkap dan terpercaya.</p>
           <div class="flex gap-3">
-            <a href="#" class="w-9 h-9 rounded-lg bg-gray-800 hover:bg-[#2E7D32] flex items-center justify-center transition"><i class="fa-brands fa-instagram text-sm text-gray-400 hover:text-white"></i></a>
-            <a href="#" class="w-9 h-9 rounded-lg bg-gray-800 hover:bg-[#2E7D32] flex items-center justify-center transition"><i class="fa-brands fa-twitter text-sm text-gray-400 hover:text-white"></i></a>
-            <a href="#" class="w-9 h-9 rounded-lg bg-gray-800 hover:bg-[#2E7D32] flex items-center justify-center transition"><i class="fa-brands fa-youtube text-sm text-gray-400 hover:text-white"></i></a>
-            <a href="#" class="w-9 h-9 rounded-lg bg-gray-800 hover:bg-[#2E7D32] flex items-center justify-center transition"><i class="fa-brands fa-github text-sm text-gray-400 hover:text-white"></i></a>
+            <a href="#" class="w-9 h-9 rounded-lg bg-gray-800 hover:bg-[#2E7D32] flex items-center justify-center transition"><i class="fa-brands fa-instagram text-sm"></i></a>
+            <a href="#" class="w-9 h-9 rounded-lg bg-gray-800 hover:bg-[#2E7D32] flex items-center justify-center transition"><i class="fa-brands fa-twitter text-sm"></i></a>
+            <a href="#" class="w-9 h-9 rounded-lg bg-gray-800 hover:bg-[#2E7D32] flex items-center justify-center transition"><i class="fa-brands fa-youtube text-sm"></i></a>
+            <a href="#" class="w-9 h-9 rounded-lg bg-gray-800 hover:bg-[#2E7D32] flex items-center justify-center transition"><i class="fa-brands fa-github text-sm"></i></a>
           </div>
         </div>
-        <!-- Links -->
+
+        <!-- Platform Links -->
         <div>
           <p class="font-semibold text-white text-sm mb-4">Platform</p>
           <ul class="space-y-2 text-sm">
-            <li><a href="{{ route('satwa') }}" class="hover:text-white transition">Katalog Spesies</a></li>
-            <li><a href="peta-interaktif.html" class="hover:text-white transition">Peta Interaktif</a></li>
-            <li><a href="herbal.html" class="hover:text-white transition">Herbal Finder</a></li>
-            <li><a href="#" class="hover:text-white transition">Jurnal Riset</a></li>
+            <li><a href="{{ route('homepage') }}" class="hover:text-white transition">Beranda</a></li>
+            <li><a href="{{ route('spesies') }}" class="hover:text-white transition">Katalog Spesies</a></li>
+            <li><a href="{{ route('herbal') }}" class="hover:text-white transition">Herbal Finder</a></li>
+            <li><a href="{{ route('map') }}" class="hover:text-white transition">Peta Interaktif</a></li>
+            <li><a href="{{ route('riset') }}" class="hover:text-white transition">Jurnal Riset</a></li>
           </ul>
         </div>
+
+        <!-- Komunitas Links -->
         <div>
           <p class="font-semibold text-white text-sm mb-4">Komunitas</p>
           <ul class="space-y-2 text-sm">
-            <li><a href="#" class="hover:text-white transition">Forum Diskusi</a></li>
-            <li><a href="#" class="hover:text-white transition">Citizen Science</a></li>
-            <li><a href="#" class="hover:text-white transition">Lapor Sighting</a></li>
-            <li><a href="#" class="hover:text-white transition">Volunteer</a></li>
+            <li><a href="{{ route('kontribusi') }}" class="hover:text-white transition">Upload Data</a></li>
+            <li><a href="{{ route('kontribusi') }}" class="hover:text-white transition">Citizen Science</a></li>
+            <li><a href="{{ route('kontribusi') }}" class="hover:text-white transition">Lapor Sighting</a></li>
           </ul>
         </div>
+
+        <!-- Info Links -->
         <div>
           <p class="font-semibold text-white text-sm mb-4">Info</p>
           <ul class="space-y-2 text-sm">
-            <li><a href="#" class="hover:text-white transition">Tentang Kami</a></li>
-            <li><a href="#" class="hover:text-white transition">Kemitraan</a></li>
+            <li><a href="{{ route('homepage') }}" class="hover:text-white transition">Tentang Kami</a></li>
             <li><a href="#" class="hover:text-white transition">Kebijakan Privasi</a></li>
             <li><a href="#" class="hover:text-white transition">Kontak</a></li>
           </ul>
         </div>
       </div>
+
       <div class="border-t border-gray-800 pt-6 flex flex-col md:flex-row justify-between items-center gap-3 text-xs">
-        <p>© 2025 Nusantara BioHub. Hak Cipta Dilindungi.</p>
+        <p>&copy; {{ date('Y') }} Nusantara BioHub. Hak Cipta Dilindungi.</p>
         <p class="flex items-center gap-1.5">Dibuat dengan <i class="fa-solid fa-heart text-[#D97706]"></i> untuk Biodiversitas Indonesia</p>
       </div>
     </div>

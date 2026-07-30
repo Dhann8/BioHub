@@ -9,7 +9,7 @@
           <h2 class="text-3xl md:text-5xl font-black text-white mb-4">Bersama Menjaga <br/><span class="text-[#D97706]">Kekayaan Hayati</span> Indonesia</h2>
           <p class="text-white/75 text-base max-w-xl mx-auto mb-8">Bergabunglah dengan 28.000+ peneliti, pecinta alam, dan komunitas lokal dalam mendokumentasikan dan melestarikan biodiversitas Nusantara.</p>
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="#" class="bg-[#D97706] hover:bg-[#B45309] text-white font-bold px-8 py-4 rounded-xl text-sm transition">
+            <a href="{{ route('register') }}" class="bg-[#D97706] hover:bg-[#B45309] text-white font-bold px-8 py-4 rounded-xl text-sm transition">
               <i class="fa-solid fa-rocket mr-2"></i>Mulai Berkontribusi
             </a>
             <a href="#" class="bg-white/15 hover:bg-white/25 border border-white/40 text-white font-bold px-8 py-4 rounded-xl text-sm transition">

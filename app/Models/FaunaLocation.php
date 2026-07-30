@@ -16,9 +16,6 @@ class FaunaLocation extends Model
         'longitude',
     ];
 
-    /**
-     * Relasi BelongsTo: Lokasi terhubung ke satu Fauna.
-     */
     public function fauna()
     {
         return $this->belongsTo(Fauna::class);
