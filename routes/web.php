@@ -9,6 +9,7 @@ use App\Http\Controllers\HerbalController;
 use App\Http\Controllers\HerbalDetailController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ContributionController;
+use App\Http\Controllers\SearchController;
 use App\Models\Fauna;
 use App\Models\Taxonomy;
 use App\Models\Herbal;
@@ -95,6 +96,8 @@ Route::get('/kontribusi', function () {
         : collect();
     return view('kontribusi.page', compact('myContributions'));
 })->name('kontribusi');
+
+Route::get('/api/global-search', [SearchController::class, 'globalSearch'])->name('api.global-search');
 
 Route::middleware('guest')->group(function () {
     // Admin Login Routes

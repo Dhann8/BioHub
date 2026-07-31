@@ -95,7 +95,7 @@ class AuthController extends Controller
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
         ]);
 
-        // Role otomatis 'user' saat mendaftar lewat form (tidak terlihat oleh pendaftar)
+        // Role otomatis 'user' saat mendaftar lewat form
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],

@@ -17,9 +17,6 @@ let speciesTotalItems = 0;
 let speciesLoadedCount = 0;
 let isLoadingSpecies = false;
 
-// ────────────────────────────────────────────────────
-// Toggle Active (Selector Cards & Buttons)
-// ────────────────────────────────────────────────────
 window.toggleActive = function(btn) {
     if (!btn) return;
 
@@ -58,9 +55,6 @@ window.toggleActive = function(btn) {
     }
 };
 
-// ────────────────────────────────────────────────────
-// Navigasi Wizard Step
-// ────────────────────────────────────────────────────
 window.goToStep = function(step) {
     document.querySelectorAll('.wizard-step').forEach(el => {
         el.classList.remove('active');
@@ -100,9 +94,6 @@ window.goToStep = function(step) {
     window.scrollTo({ top: 200, behavior: 'smooth' });
 };
 
-// ────────────────────────────────────────────────────
-// Fetch Data Spesies dari API
-// ────────────────────────────────────────────────────
 function fetchSpecies(append = false) {
     if (isLoadingSpecies) return;
     isLoadingSpecies = true;
@@ -172,16 +163,10 @@ function fetchSpecies(append = false) {
         });
 }
 
-// ────────────────────────────────────────────────────
-// Load More Handler
-// ────────────────────────────────────────────────────
 window.loadMoreSpecies = function() {
     fetchSpecies(true);
 };
 
-// ────────────────────────────────────────────────────
-// Render Kartu Spesies dari Data JSON
-// ────────────────────────────────────────────────────
 function renderSpeciesCard(fauna) {
     const iucn       = fauna.iucn_status || 'LC';
     const iucnClass  = { CR: 'bg-red-700', EN: 'bg-orange-600', VU: 'bg-amber-500', NT: 'bg-yellow-400', LC: 'bg-green-600' };
@@ -228,9 +213,6 @@ function renderSpeciesCard(fauna) {
     </div>`;
 }
 
-// ────────────────────────────────────────────────────
-// Radio Input Event untuk Ukuran Tubuh
-// ────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('input[name="size"]').forEach(radio => {
         radio.addEventListener('change', (e) => {
