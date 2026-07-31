@@ -113,7 +113,7 @@
   <!-- Profile Widget -->
   <div class="px-4 py-4 border-t border-white/10">
     <div class="flex items-center gap-3 mb-3">
-      <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg" class="w-9 h-9 rounded-full object-cover ring-2 ring-[#D97706]/60" />
+      <img src="{{ Auth::user()->foto_profile ? asset('storage/profile/' . Auth::user()->foto_profile) : asset('image/iconProfil.jpg') }}" class="w-9 h-9 rounded-full object-cover ring-2 ring-[#D97706]/60" />
       <div class="flex-1 min-w-0">
         <p class="text-white text-xs font-semibold leading-tight truncate">{{ Auth::check() ? Auth::user()->name : 'Dr. Pakar Biodiversity' }}</p>
         <span class="inline-block mt-0.5 bg-[#D97706]/20 text-[#D97706] text-[10px] font-semibold px-1.5 py-0.5 rounded">Admin Validator</span>

@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Notifications\SendSixDigitCodeNotification;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Auth\Events\PasswordReset;
+use App\Http\Controllers\Controller;
 
 class AuthController extends Controller
 {
@@ -95,7 +97,6 @@ class AuthController extends Controller
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
         ]);
 
-        // Role otomatis 'user' saat mendaftar lewat form
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
@@ -125,77 +126,112 @@ class AuthController extends Controller
         return view('auth.forgot-password');
     }
 
+    // 1. Generate Kode 6 Digit & Kirim via Notification
     public function sendResetLinkEmail(Request $request)
     {
         $request->validate([
-            'email' => ['required', 'email'],
+            'email' => ['required', 'email', 'exists:users,email'],
         ], [
             'email.required' => 'Email wajib diisi.',
-            'email.email' => 'Format email tidak valid.',
+            'email.email'    => 'Format email tidak valid.',
+            'email.exists'   => 'Email tidak ditemukan dalam sistem kami.',
         ]);
 
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
+        // Generate 6 digit angka acak
+        $code = random_int(100000, 999999);
 
-        if ($status === Password::RESET_LINK_SENT) {
-            return redirect()->route('homepage')
-                ->with('reset_email', $request->email)
-                ->with('open_reset_modal', true)
-                ->with('info', 'Kode reset telah dikirim ke email ' . $request->email . '. Masukkan kode di bawah ini.');
-        }
+        // Hapus token lama jika ada, lalu simpan kode yang telah di-hash
+        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+        DB::table('password_reset_tokens')->insert([
+            'email'      => $request->email,
+            'token'      => Hash::make($code),
+            'created_at' => now(),
+        ]);
 
-        return back()->withErrors(['email' => 'Email tidak ditemukan dalam sistem kami.'])->onlyInput('email');
+        // Kirim email notifikasi berisi kode 6 digit
+        $user = User::where('email', $request->email)->first();
+        $user->notify(new SendSixDigitCodeNotification((string) $code));
+
+        return redirect()->route('homepage')
+            ->with('reset_email', $request->email)
+            ->with('open_reset_modal', true)
+            ->with('info', 'Kode 6 digit telah dikirim ke email ' . $request->email . '. Masukkan kode tersebut di bawah ini.');
     }
 
-    public function showResetPasswordForm(string $token, Request $request)
+    public function showResetPasswordForm(string $token = 'manual', ?Request $request = null)
     {
-        $email = $request->email ?? session('reset_email');
+        // Aman dari error null property access
+        $email = $request ? $request->email : session('reset_email');
 
-        if ($token === 'manual') {
-            return redirect()->route('homepage')
-                ->with('reset_email', $email)
-                ->with('open_reset_modal', true)
-                ->with('info', 'Masukkan kode dari email Anda dan buat kata sandi baru.');
-        }
-
-        return view('auth.reset-password', [
-            'token'        => $token,
-            'email'        => $email,
-            'fromRedirect' => false,
-            'infoMessage'  => null,
-        ]);
+        return redirect()->route('homepage')
+            ->with('reset_email', $email)
+            ->with('open_reset_modal', true)
+            ->with('info', 'Masukkan kode 6 digit dari email Anda dan buat kata sandi baru.');
     }
 
+    // 2. Verifikasi Kode 6 Digit & Perbarui Password
     public function resetPassword(Request $request)
     {
         $request->validate([
-            'token' => ['required'],
-            'email' => ['required', 'email'],
+            'email'    => ['required', 'email', 'exists:users,email'],
+            'code'     => ['required', 'numeric', 'digits:6'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ], [
-            'email.required' => 'Email wajib diisi.',
-            'email.email' => 'Format email tidak valid.',
-            'password.required' => 'Password baru wajib diisi.',
-            'password.min' => 'Password minimal 8 karakter.',
+            'email.required'     => 'Email wajib diisi.',
+            'email.email'        => 'Format email tidak valid.',
+            'email.exists'       => 'Email tidak terdaftar.',
+            'code.required'      => 'Kode 6 digit wajib diisi.',
+            'code.numeric'       => 'Kode harus berupa angka.',
+            'code.digits'        => 'Kode harus berjumlah 6 digit.',
+            'password.required'  => 'Password baru wajib diisi.',
+            'password.min'       => 'Password minimal 8 karakter.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
         ]);
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function (User $user, string $password) {
-                $user->forceFill([
-                    'password' => Hash::make($password),
-                    'remember_token' => Str::random(60),
-                ])->save();
 
-                event(new PasswordReset($user));
-            }
-        );
+        $record = DB::table('password_reset_tokens')
+            ->where('email', $request->email)
+            ->first();
 
-        if ($status === Password::PASSWORD_RESET) {
-            return redirect()->route('login')->with('success', 'Password Anda berhasil diperbarui! Silakan login kembali.');
+        // Cek 1: Record token ada atau tidak
+        if (!$record) {
+            return back()
+                ->with('open_reset_modal', true)
+                ->with('reset_email', $request->email)
+                ->withErrors(['code' => 'Permintaan reset tidak ditemukan. Silakan minta kode baru.'])
+                ->withInput();
         }
 
-        return back()->withErrors(['email' => 'Token reset password tidak valid atau sudah kadaluwarsa.'])->withInput($request->only('email', 'token', 'auth_tab'));
+        // Cek 2: Expiration (berlaku 15 menit)
+        if (now()->subMinutes(15)->gt($record->created_at)) {
+            DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+            return back()
+                ->with('open_reset_modal', true)
+                ->with('reset_email', $request->email)
+                ->withErrors(['code' => 'Kode 6 digit sudah kadaluwarsa. Silakan minta kode baru.'])
+                ->withInput();
+        }
+
+        // Cek 3: Verifikasi kecocokan hash kode
+        if (!Hash::check($request->code, $record->token)) {
+            return back()
+                ->with('open_reset_modal', true)
+                ->with('reset_email', $request->email)
+                ->withErrors(['code' => 'Kode 6 digit yang Anda masukkan salah.'])
+                ->withInput();
+        }
+
+        // Cek 4: Update Password User
+        $user = User::where('email', $request->email)->first();
+        $user->forceFill([
+            'password'       => Hash::make($request->password),
+            'remember_token' => Str::random(60),
+        ])->save();
+
+        event(new PasswordReset($user));
+
+        // Hapus token yang sudah dipakai
+        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+
+        return redirect()->route('login')->with('success', 'Password Anda berhasil diperbarui! Silakan login kembali.');
     }
-}
+}   

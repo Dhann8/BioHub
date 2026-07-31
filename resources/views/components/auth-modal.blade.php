@@ -270,7 +270,7 @@
 
                     <!-- Token / Kode Reset -->
                     <div>
-                        <label for="modal_reset_token" class="block text-xs font-semibold text-gray-700 mb-1">
+                        <label for="modal_reset_code" class="block text-xs font-semibold text-gray-700 mb-1">
                             Kode Reset
                             <span class="text-[10px] font-normal text-gray-400 ml-1">(dari email yang dikirimkan)</span>
                         </label>
@@ -278,20 +278,20 @@
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                                 <i class="fa-solid fa-fingerprint text-xs"></i>
                             </div>
-                            <input type="text" name="token" id="modal_reset_token"
-                                value="{{ session('reset_token') ?? (old('auth_tab') === 'reset' ? old('token') : '') }}"
-                                required placeholder="Tempel kode token dari email..."
+                            <input type="text" name="code" id="modal_reset_code"
+                                value="{{ session('reset_code') ?? (old('auth_tab') === 'reset' ? old('code') : '') }}"
+                                required placeholder="Masukkan 6 digit kode dari email..."
                                 autocomplete="off"
-                                class="block w-full pl-9 pr-3 py-2.5 font-mono text-[11px] text-gray-800 bg-gray-50/60 border @if($errors->has('token') && old('auth_tab') === 'reset') border-red-400 bg-red-50/30 @else border-gray-200 focus:border-[#2E7D32] focus:bg-white @endif rounded-xl transition duration-200 focus:outline-none focus:ring-2 focus:ring-[#2E7D32]/20 placeholder:font-sans placeholder:text-gray-400 placeholder:text-xs">
+                                class="block w-full pl-9 pr-3 py-2.5 font-mono text-[11px] text-gray-800 bg-gray-50/60 border @if($errors->has('code') && old('auth_tab') === 'reset') border-red-400 bg-red-50/30 @else border-gray-200 focus:border-[#2E7D32] focus:bg-white @endif rounded-xl transition duration-200 focus:outline-none focus:ring-2 focus:ring-[#2E7D32]/20 placeholder:font-sans placeholder:text-gray-400 placeholder:text-xs">
                         </div>
-                        @if ($errors->has('token') && old('auth_tab') === 'reset')
+                        @if ($errors->has('code') && old('auth_tab') === 'reset')
                             <p class="mt-1 text-[11px] text-red-600 flex items-center gap-1">
-                                <i class="fa-solid fa-circle-xmark"></i> {{ $errors->first('token') }}
+                                <i class="fa-solid fa-circle-xmark"></i> {{ $errors->first('code') }}
                             </p>
                         @endif
                         <p class="mt-1.5 text-[10px] text-gray-400 leading-snug flex items-start gap-1">
                             <i class="fa-solid fa-circle-info text-[#2E7D32] mt-0.5 flex-shrink-0"></i>
-                            <span>Buka email → klik tautan reset → salin token dari URL atau badan email.</span>
+                            <span>Buka email → salin 6 digit kode dari badan email.</span>
                         </p>
                     </div>
 
@@ -426,7 +426,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         const hash = window.location.hash;
 
-        @if (old('auth_tab') === 'reset' || session('open_reset_modal') || $errors->has('token'))
+        @if (old('auth_tab') === 'reset' || session('open_reset_modal') || $errors->has('code'))
             openAuthModal('reset');
         @elseif (old('auth_tab') === 'register' || $errors->has('name'))
             openAuthModal('register');

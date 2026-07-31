@@ -13,16 +13,6 @@
                         datang kembali, {{ Auth::user()->name }}</p>
                 </div>
 
-                <!-- Search -->
-                <div class="relative w-72 hidden md:block">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="fa-solid fa-magnifying-glass text-gray-400 text-sm"></i>
-                    </div>
-
-                    <input type="text" placeholder="Cari data spesies, gejala, atau kontributor..."
-                        class="w-full pl-9 pr-4 py-2 text-sm bg-[#F8FAFC] border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1E4D2B]/30 placeholder-gray-400" />
-                </div>
-
                 <!-- Notification -->
                 <div class="relative cursor-pointer">
                     <div

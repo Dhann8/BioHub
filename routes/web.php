@@ -175,4 +175,5 @@ Route::middleware('auth')->group(function () {
         Route::get('/crowdsourcing', [ContributionController::class, 'adminIndex'])->name('crowdsourcing.index');
         Route::delete('/fauna/{id}', [FaunaController::class, 'destroy'])->name('fauna.destroy');
     });
+
 });

@@ -4,13 +4,18 @@ document.addEventListener('DOMContentLoaded', function () {
     const categorySelect = document.getElementById('globalCategorySelect');
     const searchBtn = document.getElementById('searchBtn');
 
+    if (!searchForm) return;
+
     searchForm.addEventListener('submit', async function (e) {
         e.preventDefault();
 
         const query = searchInput.value.trim();
-        const category = categorySelect.value;
+        const category = categorySelect ? categorySelect.value : '';
 
         if (!query) return;
+
+        // Ambil URL API dari atribut data-action form atau fallback ke endpoint lokal
+        const apiUrl = searchForm.dataset.apiUrl || '/api/global-search';
 
         // State loading
         searchBtn.disabled = true;
@@ -18,19 +23,29 @@ document.addEventListener('DOMContentLoaded', function () {
         searchBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Mencari...</span>`;
 
         try {
-            const response = await fetch(`{{ route('api.global-search') }}?search=${encodeURIComponent(query)}&kategori=${category}`);
+            const response = await fetch(`${apiUrl}?search=${encodeURIComponent(query)}&kategori=${category}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            // Cek apakah server mengembalikan HTML Error alih-alih JSON
+            if (!response.ok) {
+                throw new Error(`HTTP Error Status: ${response.status}`);
+            }
+
             const data = await response.json();
 
             if (data.status === 'success' && data.redirect_url) {
-                // Jika ketemu, langsung pindah ke halaman detail
+                // Pindah ke halaman detail jika data ditemukan
                 window.location.href = data.redirect_url;
             } else {
-                // Jika data tidak tersedia
-                alert(data.message || 'Data tidak tersedia');
+                alert(data.message || 'Data tidak ditemukan');
             }
         } catch (error) {
             console.error('Search error:', error);
-            alert('Terjadi kesalahan koneksi atau data tidak ditemukan.');
+            alert('Terjadi kesalahan sistem atau data tidak ditemukan.');
         } finally {
             searchBtn.disabled = false;
             searchBtn.innerHTML = originalBtnHtml;

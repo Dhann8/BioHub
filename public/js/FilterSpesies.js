@@ -37,7 +37,7 @@ window.toggleActive = function(btn) {
         regionSection.querySelectorAll('.selector-card').forEach(card => {
             card.classList.remove('active', 'bg-forest-primary', 'text-white', 'border-forest-primary');
         });
-        btn.classList.add('active', 'bg-forest-primary', 'text-white', 'border-forest-primary');
+        btn.classList.add('active', 'bg-forest-primary', 'text-grey-400', 'border-forest-primary');
         filterState.region = btn.getAttribute('data-value') || btn.innerText.trim();
         return;
     }
