@@ -134,7 +134,7 @@ class AuthController extends Controller
         ], [
             'email.required' => 'Email wajib diisi.',
             'email.email'    => 'Format email tidak valid.',
-            'email.exists'   => 'Email tidak ditemukan dalam sistem kami.',
+            'email.exists'   => 'Email tidak ditemukan.',
         ]);
 
         // Generate 6 digit angka acak

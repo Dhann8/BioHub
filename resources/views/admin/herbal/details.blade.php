@@ -7,14 +7,9 @@
     <div class="flex-1 flex flex-col h-screen overflow-y-auto overflow-x-hidden" id="main-scroll-area">
         
         <!-- TOP HEADER -->
-        <header id="header" class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between gap-4 sticky top-0 z-10 shadow-sm">
+        <header id="header" class="bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between gap-4 sticky top-0 z-10">
             <div>
-                <div class="flex items-center gap-2 text-xs text-gray-400 mb-0.5">
-                    <a href="{{ route('admin.herbal.index') }}" class="hover:text-[#1E4D2B]">TOGA Herbal Management</a>
-                    <i class="fa-solid fa-chevron-right text-[10px]"></i>
-                    <span class="text-gray-600 font-medium">Detail & Kandungan</span>
-                </div>
-                <h1 class="text-lg font-bold text-[#1E4D2B] leading-tight">Pengelolaan Spesifikasi Detail Herbal</h1>
+                <h1 class="text-xl font-bold text-gray-800">Herbal Details</h1>
             </div>
         </header>
 

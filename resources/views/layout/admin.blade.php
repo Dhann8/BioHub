@@ -8,32 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            forest: {
-              50:  '#f0f7f2',
-              100: '#d9edd e',
-              500: '#2d6a3f',
-              600: '#1E4D2B',
-              700: '#163a20',
-              800: '#0f2817',
-              900: '#091810',
-            },
-            amber: {
-              400: '#fbbf24',
-              500: '#f59e0b',
-              600: '#D97706',
-              700: '#b45309',
-            }
-            
-          }
-        }
-      }
-    }
-  </script>
+
   <style>
     body { font-family: 'Inter', 'Segoe UI', sans-serif; }
     .sidebar-active { background: #1E4D2B; color: #fff; }

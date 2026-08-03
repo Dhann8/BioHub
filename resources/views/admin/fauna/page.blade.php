@@ -1,4 +1,4 @@
-﻿@extends('layout.admin')
+@extends('layout.admin')
 @section('content')
 
     <div class="flex min-h-screen bg-[#F8FAFC]">
@@ -7,10 +7,9 @@
 
             <!-- TOP HEADER -->
             <header id="header"
-                class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between gap-4 sticky top-0 z-10 shadow-sm">
+                class="bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between gap-4 sticky top-0 z-10">
                 <div>
-                    <h1 class="text-lg font-bold text-[#1E4D2B] leading-tight">Fauna Management</h1>
-                    <p class="text-xs text-gray-400 mt-0.5">Katalog Spesies Endemik & Status Konservasi</p>
+                    <h1 class="text-xl font-bold text-gray-800">Fauna Management</h1>
                 </div>
                 <div class="flex items-center gap-3">
                     <div class="relative cursor-pointer">
@@ -19,6 +18,11 @@
                             <i class="fa-solid fa-bell text-gray-500 text-sm"></i>
                         </div>
                     </div>
+                    <button onclick="exportFaunaToExcel()"
+                        id="btn-export-fauna"
+                        class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-all shadow-sm cursor-pointer active:scale-95">
+                        <i class="fa-solid fa-file-excel text-xs"></i> Unduh Excel
+                    </button>
                     <button onclick="openAddSpeciesModal()"
                         class="flex items-center gap-2 bg-[#1E4D2B] hover:bg-[#163a20] text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors shadow-sm cursor-pointer">
                         <i class="fa-solid fa-plus text-xs"></i> Add New Species
@@ -214,3 +218,65 @@
 @include('components.admin.modal-edit-fauna')
 
 @endsection
+
+@push('scripts')
+{{-- ==================== EXPORT EXCEL SCRIPT ==================== --}}
+<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+<script>
+function exportFaunaToExcel() {
+    const btn = document.getElementById('btn-export-fauna');
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-xs"></i> Menyiapkan...';
+    btn.disabled = true;
+
+    try {
+        // Kumpulkan semua baris fauna dari tabel
+        const rows = document.querySelectorAll('tbody tr.fauna-row');
+        const data = [
+            ['No', 'Nama Lokal', 'Nama Ilmiah', 'Kelas Taksonomi', 'IUCN Status', 'Ukuran', 'Fitur Fisik']
+        ];
+
+        let no = 1;
+        rows.forEach((row) => {
+            if (row.style.display === 'none') return;
+            const cells = row.querySelectorAll('td');
+            // Ambil semua <p> dari cell pertama
+            const pTags    = cells[0]?.querySelectorAll('p') || [];
+            const namaLokal  = pTags[0]?.innerText?.trim() || '';
+            const namaIlmiah = pTags[1]?.innerText?.trim() || '';
+            const taksonomi  = cells[1]?.innerText?.trim() || '';
+            const iucnStatus = cells[2]?.innerText?.trim() || '';
+            const ukuran     = cells[3]?.innerText?.trim() || '';
+            const fiturFisikEl = cells[4]?.querySelectorAll('span');
+            const fiturFisik   = fiturFisikEl ? Array.from(fiturFisikEl).map(s => s.innerText.trim()).filter(Boolean).join(', ') : '';
+
+            if (namaLokal) {
+                data.push([no++, namaLokal, namaIlmiah, taksonomi, iucnStatus, ukuran, fiturFisik]);
+            }
+        });
+
+        if (data.length <= 1) {
+            alert('Tidak ada data fauna untuk diunduh.');
+            return;
+        }
+
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(data);
+
+        ws['!cols'] = [
+            { wch: 5 }, { wch: 22 }, { wch: 25 }, { wch: 18 }, { wch: 14 }, { wch: 10 }, { wch: 35 }
+        ];
+
+        XLSX.utils.book_append_sheet(wb, ws, 'Daftar Fauna');
+
+        const today = new Date().toISOString().slice(0, 10);
+        XLSX.writeFile(wb, `laporan-fauna-${today}.xlsx`);
+    } catch (err) {
+        console.error(err);
+        alert('Gagal mengekspor data. Silakan coba lagi.');
+    } finally {
+        btn.innerHTML = '<i class="fa-solid fa-file-excel text-xs"></i> Unduh Excel';
+        btn.disabled = false;
+    }
+}
+</script>
+@endpush

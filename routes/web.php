@@ -174,6 +174,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/contributions/{id}/reject', [ContributionController::class, 'rejectContribution'])->name('contributions.reject');
         Route::get('/crowdsourcing', [ContributionController::class, 'adminIndex'])->name('crowdsourcing.index');
         Route::delete('/fauna/{id}', [FaunaController::class, 'destroy'])->name('fauna.destroy');
+        Route::get('/settings', [\App\Http\Controllers\SettingController::class, 'index'])->name('settings');
+        Route::post('/settings', [\App\Http\Controllers\SettingController::class, 'update'])->name('settings.update');
     });
 
 });

@@ -7,14 +7,9 @@
     <div class="flex-1 flex flex-col min-h-screen overflow-x-hidden">
         
         {{-- HEADER HALAMAN LOKASI FAUNA --}}
-        <header id="header" class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between gap-4 sticky top-0 z-10 shadow-sm">
+        <header id="header" class="bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between gap-4 sticky top-0 z-10">
             <div>
-                <div class="flex items-center gap-2 text-xs text-gray-400 mb-0.5">
-                    <a href="{{ route('admin.fauna.index') }}" class="hover:text-[#1E4D2B]">Fauna Management</a>
-                    <i class="fa-solid fa-chevron-right text-[10px]"></i>
-                    <span class="text-gray-600 font-medium">Lokasi & GIS Fauna</span>
-                </div>
-                <h1 class="text-lg font-bold text-[#1E4D2B] leading-tight">Pemetaan Habitat & GIS Fauna</h1>
+                <h1 class="text-xl font-bold text-gray-800">Fauna Locations</h1>
             </div>
             
             <div class="flex items-center gap-3">

@@ -8,41 +8,7 @@
     <title>Nusantara BioHub</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script>
-        tailwind.config = {
-          theme: {
-            extend: {
-              colors: {
-                green: {
-                  primary: '#2E7D32',
-                  light: '#4CAF50',
-                  pale: '#E8F5E9',
-                  dark: '#1B5E20',
-                },
-                forest: {
-                  primary: '#1E4D2B',
-                  light: '#2E7D32',
-                  pale: '#E8F5E9',
-                  dark: '#0E2E1A',
-                },
-                amber: {
-                  accent: '#D97706',
-                  light: '#FEF3C7',
-                  dark: '#B45309',
-                },
-                status: {
-                  cr: '#B71C1C', // Critically Endangered
-                  en: '#E65100', // Endangered
-                  vu: '#F57F17', // Vulnerable
-                }
-              },
-              fontFamily: {
-                sans: ['Inter', 'system-ui', 'sans-serif'],
-              }
-            }
-          }
-        }
-    </script>
+
     <style>
         body { font-family: 'Inter', sans-serif; }
         .stat-card:hover { transform: translateY(-4px); transition: all 0.3s ease; }

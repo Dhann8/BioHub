@@ -272,7 +272,6 @@
                     <div>
                         <label for="modal_reset_code" class="block text-xs font-semibold text-gray-700 mb-1">
                             Kode Reset
-                            <span class="text-[10px] font-normal text-gray-400 ml-1">(dari email yang dikirimkan)</span>
                         </label>
                         <div class="relative rounded-xl shadow-sm">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
@@ -289,10 +288,6 @@
                                 <i class="fa-solid fa-circle-xmark"></i> {{ $errors->first('code') }}
                             </p>
                         @endif
-                        <p class="mt-1.5 text-[10px] text-gray-400 leading-snug flex items-start gap-1">
-                            <i class="fa-solid fa-circle-info text-[#2E7D32] mt-0.5 flex-shrink-0"></i>
-                            <span>Buka email → salin 6 digit kode dari badan email.</span>
-                        </p>
                     </div>
 
                     <!-- Password Baru -->

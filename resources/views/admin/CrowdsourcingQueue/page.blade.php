@@ -8,13 +8,12 @@
     <div class="flex-1 flex flex-col h-screen overflow-hidden">
 
       {{-- Bagian Header & Navigasi Tab --}}
-      <header class="bg-white border-b border-gray-200 pt-5 flex flex-col shadow-sm flex-shrink-0">
+      <header class="bg-white border-b border-gray-100 pt-5 flex flex-col flex-shrink-0">
         <div class="px-6 flex items-center justify-between mb-4">
           <div>
-            <h1 class="text-lg font-bold text-[#1E4D2B]">Crowdsourcing Queue</h1>
-            <p class="text-xs text-gray-400">Moderasi Usulan Spesies &amp; Data dari Komunitas</p>
+            <h1 class="text-xl font-bold text-gray-800">Crowdsourcing Queue</h1>
           </div>
-          <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3">
             @if($pendingCount > 0)
               <div
                 class="bg-amber-50 text-amber-700 px-3 py-1.5 rounded-xl border border-amber-100 flex items-center gap-2">
@@ -27,6 +26,13 @@
                 <i class="fa-solid fa-circle-check text-xs"></i>
                 <span class="text-xs font-bold uppercase tracking-wider">Semua Sudah Diverifikasi</span>
               </div>
+            @endif
+            @if(in_array($tab, ['approved', 'rejected']))
+              <button onclick="exportHistoryToExcel()"
+                id="btn-export-history"
+                class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-all shadow-sm cursor-pointer active:scale-95">
+                <i class="fa-solid fa-file-excel text-xs"></i> Unduh History Excel
+              </button>
             @endif
           </div>
         </div>
@@ -349,5 +355,80 @@
       </div>
     </div>
   </div>
-
 @endsection
+
+@push('scripts')
+@php
+$contributionsExport = $contributions->map(function($c) {
+    return [
+        'id'              => $c->id,
+        'title'           => $c->title,
+        'category'        => ucfirst($c->category),
+        'status'          => ucfirst($c->status),
+        'author'          => optional($c->author)->name ?? 'Unknown',
+        'reviewer'        => optional($c->reviewer)->name ?? '-',
+        'moderator_notes' => $c->moderator_notes ?? '-',
+        'submitted_at'    => $c->created_at ? $c->created_at->format('d/m/Y H:i') : '-',
+        'reviewed_at'     => $c->updated_at ? $c->updated_at->format('d/m/Y H:i') : '-',
+    ];
+});
+@endphp
+<script>
+const _contributionsData = @json($contributionsExport);
+const _activeTab = @json($tab);
+</script>
+<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+<script>
+function exportHistoryToExcel() {
+    const btn = document.getElementById('btn-export-history');
+    if (!btn) return;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-xs"></i> Menyiapkan...';
+    btn.disabled = true;
+
+    try {
+        const tabLabel = _activeTab === 'approved' ? 'Approved' : 'Rejected';
+        const data = [
+            ['No', 'Judul Temuan', 'Kategori', 'Kontributor', 'Status', 'Direview Oleh', 'Catatan Moderator', 'Tanggal Submit', 'Tanggal Review']
+        ];
+
+        _contributionsData.forEach((item, index) => {
+            data.push([
+                index + 1,
+                item.title,
+                item.category,
+                item.author,
+                item.status,
+                item.reviewer,
+                item.moderator_notes,
+                item.submitted_at,
+                item.reviewed_at,
+            ]);
+        });
+
+        if (data.length <= 1) {
+            alert('Tidak ada data history untuk diunduh.');
+            return;
+        }
+
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(data);
+
+        ws['!cols'] = [
+            { wch: 5 }, { wch: 30 }, { wch: 12 }, { wch: 22 }, { wch: 12 },
+            { wch: 22 }, { wch: 35 }, { wch: 18 }, { wch: 18 }
+        ];
+
+        XLSX.utils.book_append_sheet(wb, ws, `${tabLabel} History`);
+
+        const today = new Date().toISOString().slice(0, 10);
+        XLSX.writeFile(wb, `laporan-history-${tabLabel.toLowerCase()}-${today}.xlsx`);
+    } catch (err) {
+        console.error(err);
+        alert('Gagal mengekspor data. Silakan coba lagi.');
+    } finally {
+        btn.innerHTML = '<i class="fa-solid fa-file-excel text-xs"></i> Unduh History Excel';
+        btn.disabled = false;
+    }
+}
+</script>
+@endpush

@@ -7,10 +7,9 @@
 
       {{-- HEADER HALAMAN HERBAL --}}
       <header id="header"
-        class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between gap-4 sticky top-0 z-10 shadow-sm">
+        class="bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between gap-4 sticky top-0 z-10">
         <div>
-          <h1 class="text-lg font-bold text-[#1E4D2B] leading-tight">TOGA Herbal Management</h1>
-          <p class="text-xs text-gray-400 mt-0.5">Katalog Tanaman Obat Keluarga & Formula Herbal</p>
+          <h1 class="text-xl font-bold text-gray-800">Herbal Management</h1>
         </div>
         <div class="flex items-center gap-3">
           <div class="relative cursor-pointer">
@@ -19,6 +18,11 @@
               <i class="fa-solid fa-bell text-gray-500 text-sm"></i>
             </div>
           </div>
+          <button onclick="exportHerbalToExcel()"
+            id="btn-export-herbal"
+            class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-all shadow-sm cursor-pointer active:scale-95">
+            <i class="fa-solid fa-file-excel text-xs"></i> Unduh Excel
+          </button>
           <button onclick="openAddHerbalModal()"
             class="flex items-center gap-2 bg-[#1E4D2B] hover:bg-[#163a20] text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors shadow-sm cursor-pointer">
             <i class="fa-solid fa-plus text-xs"></i> Add New Herbal
@@ -418,3 +422,67 @@
   </script>
 
 @endsection
+
+@push('scripts')
+  {{-- ==================== EXPORT EXCEL SCRIPT ==================== --}}
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+  <script>
+  function exportHerbalToExcel() {
+      const btn = document.getElementById('btn-export-herbal');
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-xs"></i> Menyiapkan...';
+      btn.disabled = true;
+
+      try {
+          const rows = document.querySelectorAll('tbody tr');
+          const data = [
+              ['No', 'Nama Lokal', 'Nama Ilmiah', 'Famili Tumbuhan', 'Metode Pengolahan', 'Tingkat Bukti', 'Panduan Dosis']
+          ];
+
+          let no = 1;
+          rows.forEach((row) => {
+              const cells = row.querySelectorAll('td');
+              if (cells.length < 4) return;
+
+              // Ambil semua tag <p> di cell pertama
+              const pTags     = cells[0]?.querySelectorAll('p') || [];
+              const namaLokal        = pTags[0]?.innerText?.trim() || '';
+              const namaIlmiah       = pTags[1]?.innerText?.trim() || '';
+              // Famili ada di p ke-3 jika ada (format: "Famili: xxx")
+              const familiRaw        = pTags[2]?.innerText?.trim() || '';
+              const famili           = familiRaw.replace('Famili: ', '') || '-';
+
+              const metodePengolahan = cells[1]?.innerText?.trim() || '-';
+              const tingkatBukti     = cells[2]?.innerText?.trim() || '-';
+              const panduanDosis     = cells[3]?.innerText?.trim() || '-';
+
+              if (namaLokal) {
+                  data.push([no++, namaLokal, namaIlmiah, famili || '-', metodePengolahan, tingkatBukti, panduanDosis]);
+              }
+          });
+
+          if (data.length <= 1) {
+              alert('Tidak ada data herbal untuk diunduh.');
+              return;
+          }
+
+          const wb = XLSX.utils.book_new();
+          const ws = XLSX.utils.aoa_to_sheet(data);
+
+          ws['!cols'] = [
+              { wch: 5 }, { wch: 22 }, { wch: 25 }, { wch: 20 }, { wch: 35 }, { wch: 15 }, { wch: 35 }
+          ];
+
+          XLSX.utils.book_append_sheet(wb, ws, 'Daftar Herbal');
+
+          const today = new Date().toISOString().slice(0, 10);
+          XLSX.writeFile(wb, `laporan-herbal-${today}.xlsx`);
+      } catch (err) {
+          console.error(err);
+          alert('Gagal mengekspor data. Silakan coba lagi.');
+      } finally {
+          btn.innerHTML = '<i class="fa-solid fa-file-excel text-xs"></i> Unduh Excel';
+          btn.disabled = false;
+      }
+  }
+  </script>
+@endpush

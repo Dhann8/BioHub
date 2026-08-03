@@ -58,7 +58,6 @@ function toggleSymptom(button) {
         selectedSymptoms.push(symptomName);
     }
 
-    console.log('Gejala terpilih:', selectedSymptoms);
 }
 
 // FUNGSI NAVIGASI STEP WIZARD

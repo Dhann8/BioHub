@@ -6,15 +6,14 @@
         <div class="flex-1 flex flex-col min-h-screen overflow-x-hidden">
             <!-- TOP HEADER -->
             <header id="header"
-                class="bg-white border-b border-gray-200 px-6 py-4 flex items-center gap-4 sticky top-0 z-10 shadow-sm">
-                <div class="flex-1">
-                    <h1 class="text-lg font-bold text-[#1E4D2B] leading-tight">Dashboard Ringkasan & Moderasi Pakar</h1>
-                    <p class="text-xs text-gray-400 mt-0.5">{{ \Carbon\Carbon::now()->isoFormat('D MMMM YYYY') }} · Selamat
-                        datang kembali, {{ Auth::user()->name }}</p>
+                class="bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between gap-4 sticky top-0 z-10">
+                <div>
+                    <h1 class="text-xl font-bold text-gray-800">Dashboard</h1>
                 </div>
 
-                <!-- Notification -->
-                <div class="relative cursor-pointer">
+                <div class="flex items-center gap-3">
+                    <!-- Notification -->
+                    <div class="relative cursor-pointer">
                     <div
                         class="w-9 h-9 bg-[#F8FAFC] border border-gray-200 rounded-xl flex items-center justify-center hover:bg-gray-100 transition-colors">
                         <i class="fa-solid fa-bell text-gray-500 text-sm"></i>
@@ -30,6 +29,7 @@
                     class="flex items-center gap-2 bg-[#1E4D2B] hover:bg-[#163a20] text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors shadow-sm cursor-pointer">
                     <i class="fa-solid fa-plus text-xs"></i> Add New Species
                 </button>
+                </div>
             </header>
 
             <!-- CONTENT BODY -->

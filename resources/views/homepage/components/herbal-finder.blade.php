@@ -71,7 +71,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const searchBtn = document.getElementById('btn-search-herbal');
     const resultsContainer = document.getElementById('herb-results-container');
     
-    let selectedSymptom = 'Demam'; // Default terpilih pertama
+    // Pattern URL Detail resmi dari Laravel Route (menggunakan placeholder :id)
+    const detailRouteTemplate = "{{ route('detail-herbal', ':id') }}";
+
+    // Ambil data symptom default dari tombol yang aktif
+    let selectedSymptom = document.querySelector('.symptom-btn.bg-\\[\\#FEF3C7\\]')?.getAttribute('data-symptom') || 'Demam';
 
     // 1. Toggle Aktif Tombol Gejala
     symptomBtns.forEach(btn => {
@@ -90,38 +94,85 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // 2. Kirim Request Pencarian saat Tombol "Cari Herbal Sekarang" Diklik
+    // Helper untuk memotong teks deskripsi
+    function truncateText(text, length = 60) {
+        if (!text) return '';
+        return text.length > length ? text.substring(0, length) + '...' : text;
+    }
+
+    // Helper untuk render kartu herbal
+    function renderHerbCards(herbals) {
+        if (!herbals || herbals.length === 0) {
+            resultsContainer.innerHTML = `
+                <div class="col-span-1 sm:col-span-2 bg-yellow-50 border border-yellow-200 rounded-xl p-6 text-center">
+                    <p class="text-sm text-yellow-800 font-medium">Data herbal untuk keluhan "${selectedSymptom}" belum tersedia.</p>
+                </div>
+            `;
+            return;
+        }
+
+        resultsContainer.innerHTML = herbals.map(herbal => {
+            const isClinical = herbal.evidence_level === 'Clinical_Trial';
+            const badgeClass = isClinical ? 'bg-[#E8F5E9] text-[#2E7D32]' : 'bg-[#FEF3C7] text-[#D97706]';
+            const badgeText = isClinical ? 'Uji Klinis' : 'Empiris';
+            const imageSrc = herbal.image_url || 'https://storage.googleapis.com/uxpilot-auth.appspot.com/gen_6ba8a92af3_ac9c9f8415f6ac80.png';
+
+            // Ganti placeholder :id dengan ID herbal sesungguhnya
+            const detailUrl = detailRouteTemplate.replace(':id', herbal.id);
+
+            return `
+                <a href="${detailUrl}" class="herb-card bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 cursor-pointer block hover:shadow-md transition">
+                    <div class="h-40 overflow-hidden">
+                        <img class="w-full h-full object-cover" src="${imageSrc}" alt="${herbal.local_name}" />
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-semibold ${badgeClass} px-2 py-1 rounded-full">
+                                ${badgeText}
+                            </span>
+                        </div>
+                        <h3 class="font-bold text-gray-800 text-sm mb-1">${herbal.local_name}</h3>
+                        <p class="text-xs text-gray-500">${truncateText(herbal.description, 60)}</p>
+                    </div>
+                </a>
+            `;
+        }).join('');
+    }
+
+    // 2. Eksekusi Pencarian saat Tombol Diklik
     searchBtn.addEventListener('click', function () {
         if (!selectedSymptom) return;
 
-        // Tampilkan Loading State
+        // State Loading
         resultsContainer.innerHTML = `
-            <div class="col-span-2 text-center py-10 text-gray-500">
+            <div class="col-span-1 sm:col-span-2 text-center py-10 text-gray-500">
                 <i class="fa-solid fa-spinner fa-spin text-2xl text-[#2E7D32] mb-2"></i>
                 <p class="text-sm">Mencari herbal untuk keluhan ${selectedSymptom}...</p>
             </div>
         `;
 
-        // Panggil Global Search API yang sudah dibuat sebelumnya
-        fetch(`{{ route('api.global-search') }}?search=${encodeURIComponent(selectedSymptom)}&kategori=herbal`)
+        // Request ke API
+        fetch(`{{ route('herbal.index') }}?symptom=${encodeURIComponent(selectedSymptom)}`)
             .then(res => res.json())
-            .then(data => {
-                if (data.status === 'success' && data.redirect_url) {
-                    // Jika ingin langsung ke detail herbal yang paling cocok
-                    window.location.href = data.redirect_url;
-                } else {
-                    // Jika tidak ditemukan
-                    resultsContainer.innerHTML = `
-                        <div class="col-span-2 bg-yellow-50 border border-yellow-200 rounded-xl p-6 text-center">
-                            <p class="text-sm text-yellow-800 font-medium">Data herbal untuk keluhan "${selectedSymptom}" belum tersedia.</p>
-                        </div>
-                    `;
-                }
+            .then(resData => {
+                const list = resData.data || [];
+
+                // Filter data di JS jika Backend belum menangani query ?symptom=
+                const filtered = list.filter(item => {
+                    if (!item.symptoms || !Array.isArray(item.symptoms)) return false;
+                    return item.symptoms.some(s => {
+                        const name = s.symptom_name.toLowerCase();
+                        const target = selectedSymptom.toLowerCase();
+                        return name.includes(target) || target.includes(name);
+                    });
+                });
+
+                renderHerbCards(filtered);
             })
             .catch(err => {
                 console.error(err);
                 resultsContainer.innerHTML = `
-                    <div class="col-span-2 bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+                    <div class="col-span-1 sm:col-span-2 bg-red-50 border border-red-200 rounded-xl p-6 text-center">
                         <p class="text-sm text-red-600 font-medium">Terjadi kesalahan saat memuat data.</p>
                     </div>
                 `;

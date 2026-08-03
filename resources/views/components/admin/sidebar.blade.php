@@ -99,14 +99,9 @@
 
     <p class="text-white/30 text-[10px] font-semibold uppercase tracking-widest px-3 mb-2 mt-5">System</p>
 
-    <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 cursor-pointer">
+    <a href="{{ route('admin.settings') }}" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer {{ request()->routeIs('admin.settings') ? 'sidebar-active' : 'text-white/70' }}">
       <i class="fa-solid fa-gear w-4 text-center"></i>
       <span class="text-sm font-medium">Settings</span>
-    </a>
-
-    <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 cursor-pointer">
-      <i class="fa-solid fa-circle-question w-4 text-center"></i>
-      <span class="text-sm font-medium">Help & Docs</span>
     </a>
   </nav>
 

@@ -6,17 +6,21 @@
         <div class="flex-1 flex flex-col min-h-screen">
 
             {{-- HEADER HALAMAN PENGGUNA --}}
-            <header
-                class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between gap-4 sticky top-0 z-10 shadow-sm">
+            <header id="header"
+                class="bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between gap-4 sticky top-0 z-10">
                 <div>
-                    <h1 class="text-lg font-bold text-[#1E4D2B] leading-tight">User & Role Access</h1>
-                    <p class="text-xs text-gray-400 mt-0.5">Kelola akun pengguna dan hak akses sistem</p>
+                    <h1 class="text-xl font-bold text-gray-800">User Management</h1>
                 </div>
                 <div class="flex items-center gap-3">
                     <div
                         class="w-9 h-9 bg-[#F8FAFC] border border-gray-200 rounded-xl flex items-center justify-center hover:bg-gray-100 transition-colors cursor-pointer">
                         <i class="fa-solid fa-bell text-gray-500 text-sm"></i>
                     </div>
+                    <button onclick="exportUsersToExcel()"
+                        id="btn-export-users"
+                        class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-all shadow-sm cursor-pointer active:scale-95">
+                        <i class="fa-solid fa-file-excel text-xs"></i> Unduh Excel
+                    </button>
                     <button onclick="openAddUserModal()"
                         class="flex items-center gap-2 bg-[#1E4D2B] hover:bg-[#163a20] text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors shadow-sm cursor-pointer">
                         <i class="fa-solid fa-user-plus text-xs"></i> Add User
@@ -538,3 +542,70 @@
     </script>
 
 @endsection
+
+@push('scripts')
+    {{-- ==================== EXPORT EXCEL SCRIPT ==================== --}}
+    @php
+    $usersExport = \App\Models\User::select('id','name','email','role','email_verified_at','created_at')
+        ->latest()->get()->map(function($u) {
+            return [
+                'name'      => $u->name,
+                'email'     => $u->email,
+                'role'      => ucfirst($u->role),
+                'verified'  => $u->email_verified_at ? 'Terverifikasi' : 'Belum Verifikasi',
+                'joined_at' => $u->created_at ? $u->created_at->format('d/m/Y') : '-',
+            ];
+        });
+    @endphp
+    <script>
+    const _usersData = @json($usersExport);
+    </script>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <script>
+    function exportUsersToExcel() {
+        const btn = document.getElementById('btn-export-users');
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-xs"></i> Menyiapkan...';
+        btn.disabled = true;
+
+        try {
+            const data = [
+                ['No', 'Nama Pengguna', 'Email', 'Role', 'Status Email', 'Tanggal Bergabung']
+            ];
+
+            _usersData.forEach((user, index) => {
+                data.push([
+                    index + 1,
+                    user.name,
+                    user.email,
+                    user.role,
+                    user.verified,
+                    user.joined_at,
+                ]);
+            });
+
+            if (data.length <= 1) {
+                alert('Tidak ada data pengguna untuk diunduh.');
+                return;
+            }
+
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(data);
+
+            ws['!cols'] = [
+                { wch: 5 }, { wch: 25 }, { wch: 32 }, { wch: 14 }, { wch: 18 }, { wch: 18 }
+            ];
+
+            XLSX.utils.book_append_sheet(wb, ws, 'Daftar Pengguna');
+
+            const today = new Date().toISOString().slice(0, 10);
+            XLSX.writeFile(wb, `laporan-pengguna-${today}.xlsx`);
+        } catch (err) {
+            console.error(err);
+            alert('Gagal mengekspor data. Silakan coba lagi.');
+        } finally {
+            btn.innerHTML = '<i class="fa-solid fa-file-excel text-xs"></i> Unduh Excel';
+            btn.disabled = false;
+        }
+    }
+    </script>
+@endpush
