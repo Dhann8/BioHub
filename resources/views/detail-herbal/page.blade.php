@@ -27,7 +27,7 @@
           <!-- Image Gallery -->
           <div class="p-6 md:p-8">
             <!-- Gambar Utama -->
-            <div class="rounded-2xl overflow-hidden mb-4 aspect-[4/3]">
+            <div class="rounded-2xl overflow-hidden mb-4 aspect-4/3">
               <img id="main-img"
                    class="w-full h-full object-cover"
                    src="{{ $mainImage }}"

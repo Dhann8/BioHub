@@ -66,12 +66,12 @@ Route::get('/detail-herbal/{id?}', function ($id = null) {
 
 
 Route::get('/map', function () {
-    $faunas = \App\Models\Fauna::with(['taxonomy', 'locations'])->get();
-    $herbals = \App\Models\Herbal::get();
+    $faunas = Fauna::with(['taxonomy', 'locations'])->get();
+    $herbals = Herbal::get();
     return view('peta-interaktif.page', compact('faunas', 'herbals'));
 })->name('map');
 
-Route::get('/wizard/herbal', function () {
+Route::get('/wizard/herbal',function () {
     return redirect()->route('herbal');
 })->name('wizard.herbal');
 

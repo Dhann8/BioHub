@@ -1,4 +1,4 @@
- <div id="grid-view" class="fixed inset-0 top-16 bg-white z-[60] overflow-y-auto hidden">
+ <div id="grid-view" class="fixed inset-0 top-16 bg-white z-60 overflow-y-auto hidden">
     <div class="max-w-7xl mx-auto px-6 py-10">
       <div class="flex items-center justify-between mb-10">
         <div>

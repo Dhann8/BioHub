@@ -150,7 +150,7 @@ class AuthController extends Controller
 
         // Kirim email notifikasi berisi kode 6 digit
         $user = User::where('email', $request->email)->first();
-        $user->notify(new SendSixDigitCodeNotification((string) $code));
+        $user->stdClass::notify(new SendSixDigitCodeNotification((string) $code));
 
         return redirect()->route('homepage')
             ->with('reset_email', $request->email)
@@ -221,6 +221,7 @@ class AuthController extends Controller
         }
 
         // Cek 4: Update Password User
+        /** @var User $user */
         $user = User::where('email', $request->email)->first();
         $user->forceFill([
             'password'       => Hash::make($request->password),

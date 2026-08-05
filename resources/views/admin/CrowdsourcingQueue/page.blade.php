@@ -287,7 +287,7 @@
               </div>
             </div>
 
-            {{-- BAR AKSI BAWAH (Tolak / Setujui) --}}
+            {{-- BAR AKSI --}}
             @if($selected->status === 'pending')
               <div
                 class="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-30">
