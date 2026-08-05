@@ -171,14 +171,17 @@
                       @endif
                     </ul>
                   </div>
-                  <div class="rounded-2xl overflow-hidden border border-gray-100 h-48 relative">
-                    <img class="w-full h-full object-cover" 
+                  <div class="rounded-2xl overflow-hidden border border-gray-100 h-48 relative group">
+                    <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                          src="{{ $herbal->map_image_url ?: asset('image/map.webp') }}" 
                          alt="Peta Distribusi {{ $herbal->local_name }}" />
-                    <div class="absolute inset-0 flex items-center justify-center bg-black/10">
+                    <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/20 gap-2">
                       <span class="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-lg text-[10px] font-bold text-gray-700 shadow-sm border border-gray-200">
-                        <i class="fa-solid fa-location-dot text-red-500 mr-1"></i> Peta Distribusi
+                        <i class="fa-solid fa-location-dot text-red-500 mr-1"></i> Asal: {{ $herbal->origin_region ?: 'Nusantara' }}
                       </span>
+                      <a href="{{ route('map', ['species' => 'flora_' . $herbal->id]) }}" class="bg-[#2E7D32] hover:bg-[#1B5E20] text-white text-xs font-bold px-4 py-2 rounded-xl shadow-lg transition flex items-center gap-1.5 backdrop-blur-sm">
+                        <i class="fa-solid fa-map-location-dot"></i> Buka di Peta Interaktif
+                      </a>
                     </div>
                   </div>
                 </div>

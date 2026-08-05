@@ -66,9 +66,10 @@ Route::get('/detail-herbal/{id?}', function ($id = null) {
 
 
 Route::get('/map', function () {
-    $faunas = Fauna::with(['taxonomy', 'locations'])->get();
-    $herbals = Herbal::get();
-    return view('peta-interaktif.page', compact('faunas', 'herbals'));
+    $faunas = Fauna::with(['taxonomy', 'locations', 'ecologicalInfo', 'physicalCharacteristics'])->get();
+    $herbals = Herbal::with(['symptoms', 'activeCompounds'])->get();
+    $taxonomies = Taxonomy::all();
+    return view('peta-interaktif.page', compact('faunas', 'herbals', 'taxonomies'));
 })->name('map');
 
 Route::get('/wizard/herbal',function () {
