@@ -27,14 +27,18 @@ class HerbalController extends Controller
             $query->where('evidence_level', $request->evidence_level);
         }
 
-        $herbals = $query->latest()->paginate(12);
+        $herbals = $query->latest()->paginate(10);
 
         if ($request->wantsJson() || $request->is('api/*')) {
             return response()->json($herbals, 200);
         }
 
-        $symptoms = Symptom::orderBy('symptom_name')->get();
-        return view('admin.herbal.page', compact('herbals', 'symptoms'));
+        if ($request->is('admin/*')) {
+            $symptoms = Symptom::orderBy('symptom_name')->get();
+            return view('admin.herbal.page', compact('herbals', 'symptoms'));
+        }
+
+        return view('herbal.page', compact('herbals'));
     }
 
     // READ DETAIL: Tampilkan Detail Herbal Spesifik

@@ -27,14 +27,11 @@ Route::get('/', function () {
 })->name('homepage');
 
 // Katalog & Detail Fauna
-Route::get('/spesies', function () {
-    $taxonomies = Taxonomy::all();
-    return view('spesies.page', compact('taxonomies'));
-})->name('spesies');
+Route::get('/spesies', [FaunaController::class, 'index'])->name('spesies');
 
 Route::get('/detail-spesies/{id?}', function ($id = null) {
-    $fauna = $id 
-        ? Fauna::with('taxonomy', 'locations')->find($id) 
+    $fauna = $id
+        ? Fauna::with('taxonomy', 'locations')->find($id)
         : Fauna::with('taxonomy', 'locations')->first();
 
     if (!$fauna) {
@@ -46,14 +43,11 @@ Route::get('/detail-spesies/{id?}', function ($id = null) {
 })->name('detail-spesies');
 
 // Katalog & Detail Herbal (TOGA)
-Route::get('/herbal', function () {
-    $herbals = Herbal::with(['symptoms', 'activeCompounds'])->latest()->get();
-    return view('herbal.page', compact('herbals'));
-})->name('herbal');
+Route::get('/herbal', [HerbalController::class, 'index'])->name('herbal');
 
 Route::get('/detail-herbal/{id?}', function ($id = null) {
-    $herbal = $id 
-        ? Herbal::with(['symptoms', 'activeCompounds', 'interactions', 'gallery'])->find($id) 
+    $herbal = $id
+        ? Herbal::with(['symptoms', 'activeCompounds', 'interactions', 'gallery'])->find($id)
         : Herbal::with(['symptoms', 'activeCompounds', 'interactions', 'gallery'])->first();
 
     if (!$herbal) {
@@ -116,7 +110,7 @@ Route::middleware('guest')->group(function () {
     // Forgot & Reset Password
     Route::get('/forgot-password', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
     Route::post('/forgot-password', [AuthController::class, 'sendResetLinkEmail'])->name('password.email');
-    
+
     Route::get('/reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
     Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 });

@@ -37,7 +37,11 @@ class FaunaController extends Controller
 
         // Filter Taksonomi berdasarkan nama (class_name) untuk wizard
         if ($request->filled('taxonomy')) {
-            $taxonomyName = $request->taxonomy;
+            $taxonomyName = [
+                'Burung' => 'Aves',
+                'Reptil' => 'Reptilia',
+                'Amfibi' => 'Amphibia',
+            ][$request->taxonomy] ?? $request->taxonomy;
             $query->whereHas('taxonomy', function ($q) use ($taxonomyName) {
                 $q->where('class_name', 'like', '%' . $taxonomyName . '%');
             });
@@ -59,8 +63,11 @@ class FaunaController extends Controller
         // Filter Wilayah
         if ($request->filled('region')) {
             $region = $request->region;
-            $query->whereHas('locations', function ($q) use ($region) {
-                $q->where('region_name', 'like', '%' . $region . '%');
+            $query->where(function ($q) use ($region) {
+                $q->where('primary_habitat', 'like', '%' . $region . '%')
+                    ->orWhereHas('locations', function ($locationQuery) use ($region) {
+                        $locationQuery->where('region_name', 'like', '%' . $region . '%');
+                    });
             });
         }
 
@@ -236,7 +243,7 @@ class FaunaController extends Controller
 public function destroy($id)
 {
     $fauna = Fauna::findOrFail($id);
-    
+
     // 1. Hapus gambar dari storage jika ada
     if ($fauna->image_url) {
         $oldPath = str_replace('/storage/', '', $fauna->image_url);

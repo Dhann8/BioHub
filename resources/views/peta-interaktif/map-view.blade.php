@@ -183,26 +183,9 @@
     <!-- LEAFLET MAP CONTAINER -->
     <div id="map" class="w-full h-full"></div>
 
-    <!-- OVERLAY FLOATING CONTROLS & TOOLBAR -->
-
     <!-- Top Center: View Mode Switcher & Active Filter Chips -->
     <div
       class="absolute top-4 left-1/2 -translate-x-1/2 z-30 pointer-events-auto flex flex-col items-center gap-2 max-w-[90vw]">
-      <div
-        class="bg-white/95 backdrop-blur-md rounded-2xl shadow-lg border border-gray-200/80 p-1.5 flex items-center gap-1">
-        <button id="btn-view-map" onclick="toggleView('map')"
-          class="view-toggle-btn flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all bg-[#2E7D32] text-white shadow-sm cursor-pointer">
-          <i class="fa-solid fa-map-location-dot"></i>
-          <span>Peta Interaktif</span>
-        </button>
-        <button id="btn-view-grid" onclick="toggleView('grid')"
-          class="view-toggle-btn flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all text-gray-600 hover:bg-gray-100 cursor-pointer">
-          <i class="fa-solid fa-grip"></i>
-          <span>Katalog Grid</span>
-          <span id="grid-count-badge"
-            class="bg-gray-200 text-gray-700 text-[10px] px-1.5 py-0.5 rounded-full font-bold">0</span>
-        </button>
-      </div>
 
       <!-- Active Filter Indicator Tags -->
       <div id="active-filter-chips"

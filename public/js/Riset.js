@@ -60,8 +60,8 @@ window.addEventListener('load', function() {
     function loadPapers() {
         if(!papersList) return;
         papersList.innerHTML = '<div class="text-center py-8 text-slate-500">Memuat makalah...</div>';
-        
-        let url = `/api/papers?page=${currentPage}&sort=${sortValue}`;
+
+        let url = `/api/papers?page=${currentPage}&per_page=5&sort=${sortValue}`;
         if (searchQuery) url += `&search=${encodeURIComponent(searchQuery)}`;
         if (filterYear) url += `&year=${filterYear}`;
         if (filterType) url += `&type=${encodeURIComponent(filterType)}`;
@@ -145,15 +145,15 @@ window.addEventListener('load', function() {
 
         let prevDisabled = data.current_page === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-50 cursor-pointer';
         let html = `<button onclick="window.changePage(${data.current_page - 1})" ${data.current_page === 1 ? 'disabled' : ''} class="w-10 h-10 rounded-xl border border-slate-200 flex items-center justify-center text-slate-400 transition ${prevDisabled}"><i class="fa-solid fa-chevron-left text-sm"></i></button>`;
-        
+
         for (let i = 1; i <= data.last_page; i++) {
             if (i === data.current_page) {
-                html += `<button class="w-10 h-10 rounded-xl bg-green-primary text-white font-bold text-sm shadow-lg shadow-green-primary/20">${i}</button>`;
+                html += `<button class="w-10 h-10 rounded-xl bg-[#2E7D32] text-white font-bold text-sm shadow-md shadow-green-900/20">${i}</button>`;
             } else {
-                html += `<button onclick="window.changePage(${i})" class="w-10 h-10 rounded-xl border border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-50 transition">${i}</button>`;
+                html += `<button onclick="window.changePage(${i})" class="w-10 h-10 rounded-xl border border-slate-200 bg-white text-slate-700 font-bold text-sm hover:bg-slate-50 transition">${i}</button>`;
             }
         }
-        
+
         let nextDisabled = data.current_page === data.last_page ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-50 cursor-pointer';
         html += `<button onclick="window.changePage(${data.current_page + 1})" ${data.current_page === data.last_page ? 'disabled' : ''} class="w-10 h-10 rounded-xl border border-slate-200 flex items-center justify-center text-slate-400 transition ${nextDisabled}"><i class="fa-solid fa-chevron-right text-sm"></i></button>`;
 
@@ -163,19 +163,19 @@ window.addEventListener('load', function() {
     window.searchForPaper = function(title) {
         if(searchInput) searchInput.value = title;
         searchQuery = title;
-        
+
         if(filterYearSelect) filterYearSelect.value = '';
         filterYear = '';
-        
+
         if(filterTypeSelect) filterTypeSelect.value = '';
         filterType = '';
-        
+
         if(sortSelect) sortSelect.value = 'newest';
         sortValue = 'newest';
-        
+
         currentPage = 1;
         loadPapers();
-        
+
         if(papersList) {
             papersList.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
@@ -260,7 +260,7 @@ window.addEventListener('load', function() {
             filterYearSelect.value = '';
             filterTypeSelect.value = '';
             sortSelect.value = 'newest';
-            
+
             searchQuery = '';
             filterYear = '';
             filterType = '';

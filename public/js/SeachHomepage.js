@@ -31,17 +31,13 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             // Cek apakah server mengembalikan HTML Error alih-alih JSON
-            if (!response.ok) {
-                throw new Error(`HTTP Error Status: ${response.status}`);
-            }
-
             const data = await response.json();
 
             if (data.status === 'success' && data.redirect_url) {
                 // Pindah ke halaman detail jika data ditemukan
                 window.location.href = data.redirect_url;
             } else {
-                alert(data.message || 'Data tidak ditemukan');
+                alert(data.message || `Data tidak ditemukan (HTTP ${response.status})`);
             }
         } catch (error) {
             console.error('Search error:', error);

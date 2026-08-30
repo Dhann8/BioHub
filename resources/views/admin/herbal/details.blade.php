@@ -17,7 +17,7 @@
         <div class="flex flex-col lg:flex-row flex-1 p-6 gap-6 items-start">
             
             <!-- LEFT PANEL: HERBAL SELECTOR -->
-            <aside class="w-full lg:w-72 bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sticky top-6 self-start flex-shrink-0">
+            <aside class="w-full lg:w-72 bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sticky top-6 self-start flex-shrink-0" data-aos="fade-right" data-aos-duration="500">
                 <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Pilih Tanaman Herbal</h2>
                 <div class="space-y-1.5 max-h-[calc(100vh-180px)] overflow-y-auto pr-1 custom-scrollbar">
                     @forelse($herbals as $herbalItem)
@@ -44,7 +44,7 @@
             </aside>
 
             <!-- RIGHT PANEL: EDIT DETAILS FORM -->
-            <main class="flex-1 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <main class="flex-1 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden" data-aos="fade-left" data-aos-duration="500">
                 @if(!$selectedHerbal)
                     <div class="flex flex-col items-center justify-center p-12 text-center text-gray-400">
                         <i class="fa-solid fa-seedling text-5xl text-gray-200 mb-3"></i>

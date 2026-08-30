@@ -40,27 +40,6 @@
           </div>
         </div>
 
-        <!-- RECENT RESEARCH STATS (Plotly Chart) -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <div class="md:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="font-bold text-slate-800 text-sm uppercase tracking-wider">Tren Publikasi (2018-2024)</h3>
-              <span class="text-xs text-green-primary font-bold"><i class="fa-solid fa-arrow-trend-up mr-1"></i>+12% Pertumbuhan</span>
-            </div>
-            <div id="trendChart" class="h-[200px] w-full"></div>
-          </div>
-          <div class="bg-green-primary p-6 rounded-2xl text-white flex flex-col justify-between">
-            <div>
-              <p class="text-green-pale/70 text-xs font-bold uppercase tracking-widest mb-1">Total Terindeks</p>
-              <h2 class="text-4xl font-black">42.1k</h2>
-              <p class="text-green-pale/80 text-xs mt-2 leading-relaxed">Makalah *peer-reviewed* di 248 jurnal internasional.</p>
-            </div>
-            <button class="bg-white/15 hover:bg-white/25 border border-white/30 text-white text-xs font-bold py-2 rounded-lg transition mt-4">
-              Lihat Indeks Sitasi
-            </button>
-          </div>
-        </div>
-
         <!-- PAPERS LIST -->
         <div class="space-y-4">
           <div class="flex items-center justify-between mb-2">

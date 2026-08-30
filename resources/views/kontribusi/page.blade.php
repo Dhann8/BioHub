@@ -187,7 +187,7 @@
           Batal
         </button>
         <button type="submit"
-          class="flex-2 bg-green-primary hover:bg-green-dark text-white font-bold py-3.5 px-8 rounded-xl transition text-sm shadow-lg shadow-green-primary/20 flex items-center gap-2 justify-center">
+          class="flex-1 bg-[#2E7D32] hover:bg-[#1B5E20] text-white font-bold py-3.5 px-8 rounded-xl transition text-sm shadow-lg shadow-green-900/20 flex items-center gap-2 justify-center">
           <i class="fa-solid fa-paper-plane"></i>
           Kirim Kontribusi
         </button>
@@ -324,11 +324,20 @@
   }
 
   function resetForm() {
+    const form = document.querySelector('#uploadForm form');
+    if (form) form.reset();
     selectedCategory = null;
     document.querySelectorAll('.category-card').forEach(c => c.classList.remove('active'));
     document.getElementById('uploadForm').classList.add('hidden');
     document.getElementById('categoryInput').value = '';
+    document.getElementById('photoInput').value = '';
     document.getElementById('filePreview').classList.add('hidden');
+    document.getElementById('previewImg').src = '';
+    document.getElementById('previewName').textContent = '';
+    document.getElementById('coordinateFields').style.display = 'grid';
+    document.getElementById('photoLabel').textContent = 'Foto / Gambar';
+    document.getElementById('formSectionTitle').textContent = 'Informasi Data';
+    document.getElementById('dropzoneSubtext').textContent = 'JPG, PNG, WEBP — Maks. 2MB';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 

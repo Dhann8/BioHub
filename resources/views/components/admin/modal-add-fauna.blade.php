@@ -72,7 +72,7 @@
                     <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Status IUCN <span class="text-red-500">*</span></label>
                     <select name="iucn_status" required 
                         class="w-full text-xs bg-[#F8FAFC] border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#1E4D2B]/30 focus:border-[#1E4D2B] transition-all text-gray-800">
-                        <option value="">-- Pilih Status IUCN --</option>
+                        <option value="">Pilih Status IUCN</option>
                         <option value="CR">CR - Critically Endangered</option>
                         <option value="EN">EN - Endangered</option>
                         <option value="VU">VU - Vulnerable</option>
@@ -89,7 +89,7 @@
                     <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Ukuran Tubuh</label>
                     <select name="size" 
                         class="w-full text-xs bg-[#F8FAFC] border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#1E4D2B]/30 focus:border-[#1E4D2B] transition-all text-gray-800">
-                        <option value="">-- Pilih Ukuran --</option>
+                        <option value="">Pilih Ukuran</option>
                         <option value="Kecil">Kecil</option>
                         <option value="Sedang">Sedang</option>
                         <option value="Besar">Besar</option>

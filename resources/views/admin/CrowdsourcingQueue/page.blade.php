@@ -67,7 +67,7 @@
       <div class="flex-1 flex overflow-hidden">
 
         {{-- Panel Kiri: Daftar Usulan dari Pengguna (40% Lebar Layar) --}}
-        <div class="w-[40%] bg-white border-r border-gray-200 flex flex-col">
+        <div class="w-[40%] bg-white border-r border-gray-200 flex flex-col" data-aos="fade-right" data-aos-duration="500">
           {{-- Fitur Pencarian Usulan --}}
           <form method="GET" action="{{ route('admin.crowdsourcing.index') }}"
             class="p-4 border-b border-gray-100 flex-shrink-0">
@@ -126,7 +126,7 @@
         </div>
 
         {{-- Panel Kanan: Detail & Verifikasi Usulan (60% Lebar Layar) --}}
-        <div class="w-[60%] bg-[#F8FAFC] flex flex-col overflow-hidden relative">
+        <div class="w-[60%] bg-[#F8FAFC] flex flex-col overflow-hidden relative" data-aos="fade-left" data-aos-duration="500">
 
           @if($selected)
             {{-- Area Konten Detail --}}

@@ -29,7 +29,7 @@
             </div>
             @endif
 
-            <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden" data-aos="fade-up" data-aos-duration="600">
                 <div class="grid grid-cols-1 md:grid-cols-4 min-h-[500px]">
                     
                     <!-- Settings Navigation -->

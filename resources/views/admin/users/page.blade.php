@@ -46,81 +46,12 @@
                     </div>
                 @endif
 
-                {{-- BAGIAN SKELETON (Animasi Loading) --}}
-                <div id="skeleton-wrapper">
-
-                    {{-- Animasi Loading untuk Kartu Statistik --}}
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-                        @for($i = 0; $i < 3; $i++)
-                            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4">
-                                <div class="skeleton w-12 h-12 rounded-xl flex-shrink-0"></div>
-                                <div class="flex-1 space-y-2">
-                                    <div class="skeleton h-3 w-20 rounded"></div>
-                                    <div class="skeleton h-6 w-12 rounded"></div>
-                                </div>
-                            </div>
-                        @endfor
-                    </div>
-
-                    {{-- Animasi Loading untuk Bar Pencarian & Filter --}}
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex gap-4 mb-6">
-                        <div class="skeleton flex-1 h-9 rounded-xl"></div>
-                        <div class="skeleton w-40 h-9 rounded-xl"></div>
-                        <div class="skeleton w-20 h-9 rounded-xl"></div>
-                    </div>
-
-                    {{-- Animasi Loading Tabel Pengguna --}}
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                        {{-- Header Tabel Skeleton --}}
-                        <div class="bg-[#F8FAFC] border-b border-gray-100 px-6 py-4 flex gap-6">
-                            <div class="skeleton h-3 w-48 rounded"></div>
-                            <div class="skeleton h-3 w-32 rounded"></div>
-                            <div class="skeleton h-3 w-20 rounded ml-auto"></div>
-                            <div class="skeleton h-3 w-20 rounded"></div>
-                            <div class="skeleton h-3 w-16 rounded"></div>
-                        </div>
-                        {{-- Baris Data Skeleton --}}
-                        @for($i = 0; $i < 8; $i++)
-                            <div class="px-6 py-4 border-b border-gray-50 flex items-center gap-4">
-                                {{-- Avatar Pengguna --}}
-                                <div class="skeleton w-10 h-10 rounded-full flex-shrink-0"></div>
-                                {{-- Nama dan Email --}}
-                                <div class="flex-1 space-y-2">
-                                    <div class="skeleton h-3 rounded" style="width: {{ [120, 160, 140, 180, 130][$i % 5] }}px">
-                                    </div>
-                                    <div class="skeleton h-2.5 rounded"
-                                        style="width: {{ [180, 210, 160, 230, 170][$i % 5] }}px">
-                                    </div>
-                                </div>
-                                {{-- Hak Akses (Role) --}}
-                                <div class="skeleton h-5 w-16 rounded-full ml-auto"></div>
-                                {{-- Status Verifikasi Email --}}
-                                <div class="skeleton h-5 w-20 rounded-full"></div>
-                                {{-- Tanggal Bergabung --}}
-                                <div class="skeleton h-3 w-24 rounded"></div>
-                                {{-- Tombol Aksi --}}
-                                <div class="flex gap-2">
-                                    <div class="skeleton w-8 h-8 rounded-lg"></div>
-                                    <div class="skeleton w-8 h-8 rounded-lg"></div>
-                                </div>
-                            </div>
-                        @endfor
-                        {{-- Bagian Pagination Skeleton --}}
-                        <div class="px-6 py-4 bg-[#F8FAFC] border-t border-gray-100 flex justify-between">
-                            <div class="skeleton h-3 w-32 rounded"></div>
-                            <div class="skeleton h-3 w-24 rounded"></div>
-                        </div>
-                    </div>
-
-                </div><!-- /skeleton-wrapper -->
-
-
-                {{-- KONTEN ASLI (Disembunyikan saat Loading) --}}
-                <div id="real-content" class="hidden space-y-6">
+                {{-- KONTEN UTAMA DENGAN AOS --}}
+                <div id="real-content" class="space-y-6">
 
                     {{-- KARTU STATISTIK RINGKASAN PENGGUNA --}}
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" data-aos="fade-down" data-aos-duration="600">
+                        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4 hover:shadow-md transition-shadow" data-aos="fade-down" data-aos-delay="50">
                             <div
                                 class="w-12 h-12 bg-[#1E4D2B]/10 rounded-xl flex items-center justify-center flex-shrink-0">
                                 <i class="fa-solid fa-users text-[#1E4D2B] text-lg"></i>
@@ -130,6 +61,25 @@
                                 <p class="text-2xl font-black text-gray-900 mt-0.5">{{ $totalUsers }}</p>
                             </div>
                         </div>
+                        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4 hover:shadow-md transition-shadow" data-aos="fade-down" data-aos-delay="150">
+                            <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-user-shield text-amber-600 text-lg"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Administrator</p>
+                                <p class="text-2xl font-black text-gray-900 mt-0.5">{{ $totalAdmins }}</p>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4 hover:shadow-md transition-shadow" data-aos="fade-down" data-aos-delay="250">
+                            <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-user text-blue-500 text-lg"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Member Biasa</p>
+                                <p class="text-2xl font-black text-gray-900 mt-0.5">{{ $totalMember }}</p>
+                            </div>
+                        </div>
+                    </div>
                         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4">
                             <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center flex-shrink-0">
                                 <i class="fa-solid fa-user-shield text-amber-600 text-lg"></i>
@@ -151,7 +101,7 @@
                     </div>
 
                     {{-- FITUR PENCARIAN & FILTER --}}
-                    <section class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                    <section class="bg-white rounded-xl shadow-sm border border-gray-100 p-4" data-aos="fade-up" data-aos-duration="600" data-aos-delay="100">
                         <form method="GET" action="{{ route('admin.users.index') }}"
                             class="flex flex-wrap items-center gap-4">
                             <div class="relative flex-1 min-w-[220px]">
@@ -180,7 +130,7 @@
                     </section>
 
                     {{-- TABEL DATA PENGGUNA --}}
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden" data-aos="fade-up" data-aos-duration="600" data-aos-delay="200">
                         <div class="overflow-x-auto">
                             <table class="w-full text-left">
                                 <thead>
@@ -467,29 +417,10 @@
 
 
     <script>
-        // ---- Skeleton → Real Content transition ----
         document.addEventListener('DOMContentLoaded', function () {
-            const skeleton = document.getElementById('skeleton-wrapper');
-            const realContent = document.getElementById('real-content');
-
-            // Simulate async load: skeleton shows for 800ms then fades out
-            setTimeout(function () {
-                // Fade out skeleton
-                skeleton.style.transition = 'opacity 0.4s ease';
-                skeleton.style.opacity = '0';
-
-                setTimeout(function () {
-                    skeleton.classList.add('hidden');
-
-                    // Fade in real content
-                    realContent.classList.remove('hidden');
-                    realContent.style.opacity = '0';
-                    realContent.style.transition = 'opacity 0.4s ease';
-                    requestAnimationFrame(function () {
-                        realContent.style.opacity = '1';
-                    });
-                }, 400);
-            }, 800);
+            if (typeof AOS !== 'undefined') {
+                AOS.refresh();
+            }
         });
 
         // ---- Modal: Add User ----

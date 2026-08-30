@@ -39,7 +39,7 @@
             @endif
 
             {{-- KARTU STATISTIK DATA LOKASI --}}
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" data-aos="fade-down" data-aos-duration="600">
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
                     <div>
                         <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Total Titik Lokasi</p>
@@ -77,7 +77,7 @@
             </div>
 
             {{-- BAR FILTER PENCARIAN --}}
-            <form method="GET" action="{{ route('admin.fauna-locations.index') }}" class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-wrap items-center gap-4">
+            <form method="GET" action="{{ route('admin.fauna-locations.index') }}" class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-wrap items-center gap-4" data-aos="fade-up" data-aos-duration="600" data-aos-delay="100">
                 {{-- Input Pencarian Lokasi --}}
                 <div class="relative flex-1 min-w-[240px]">
                     {{-- Ikon Kaca Pembesar --}}
@@ -108,7 +108,7 @@
             </form>
 
             {{-- TABEL DATA LOKASI FAUNA --}}
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden" data-aos="fade-up" data-aos-duration="600" data-aos-delay="200">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>

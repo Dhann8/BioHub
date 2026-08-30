@@ -1,4 +1,4 @@
-  <footer id="footer" class="bg-gray-900 text-gray-400 pt-16 pb-8">
+  <footer id="footer" class="bg-gray-900 text-gray-400 pt-16 pb-8" data-aos="fade-up" data-aos-duration="600">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
         <!-- Brand -->

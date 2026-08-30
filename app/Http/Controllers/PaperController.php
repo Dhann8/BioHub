@@ -42,8 +42,8 @@ class PaperController extends Controller
             $query->orderBy('created_at', 'desc'); // Newest
         }
 
-        // 5. Paginate 10 data per halaman
-        $papers = $query->paginate(10);
+        // 5. Paginate maksimal 5 data per halaman
+        $papers = $query->paginate(5);
 
         return response()->json([
             'status' => 'success',

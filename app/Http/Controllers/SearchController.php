@@ -37,7 +37,7 @@ class SearchController extends Controller
             }
 
             // 2. Cari Herbal
-            if ($kategori === 'herbal' || $kategori === 'all') {
+            if ($kategori === 'herbal' || $kategori === 'flora' || $kategori === 'all') {
                 $herbal = Herbal::where('local_name', 'LIKE', "%{$keyword}%")
                     ->orWhere('scientific_name', 'LIKE', "%{$keyword}%")
                     ->first();
@@ -55,7 +55,7 @@ class SearchController extends Controller
             return response()->json([
                 'status' => 'not_found',
                 'message' => 'Data tidak tersedia untuk "' . $keyword . '"'
-            ], 444); // Atau kirim status 200/404
+            ], 404);
 
         } catch (\Throwable $e) {
             Log::error('Search Error: ' . $e->getMessage());
